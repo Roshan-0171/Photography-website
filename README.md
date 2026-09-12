@@ -174,8 +174,10 @@ What the list gives you:
 - **Status** — each enquiry is `new`, `replied` or `archived`. Mark it replied
   once you have answered; archive spam or dead leads. Nothing is ever deleted.
 - **Tabs with counts**, and a summary strip: awaiting reply, this week, total.
-- **Search** by name or email. Filters and search are plain links and a GET
-  form, so they are bookmarkable and work with no JavaScript.
+- **Search** by name or email, across every status, filtering as you type.
+  Tabs switch instantly too. The address bar keeps up, so a filtered view can
+  be bookmarked — and underneath it is still plain links and a GET form, so it
+  all works with no JavaScript.
 - **Resend email** on any enquiry whose notification never went out — the
   red-flagged ones. Same transport as the form, so it succeeds or fails under
   the same configuration.
