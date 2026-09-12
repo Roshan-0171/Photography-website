@@ -1,69 +1,106 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
-export default function Home() {
+import Gallery from "@/components/Gallery";
+import PreviewIndex from "@/components/PreviewIndex";
+import TypeIndex from "@/components/TypeIndex";
+import Reveal from "@/components/Reveal";
+import { curated, hero } from "@/data/photos";
+import { site } from "@/data/site";
+
+export default function HomePage() {
+  /** The first three of the curated set become the featured index rows. */
+  const featuredRows = curated
+    .slice(0, 3)
+    .map((photo) => ({ photo, index: curated.indexOf(photo) }));
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      {/* Preview panel + featured index. The panel holds the LCP image and is
+          taken over by whichever index row is hovered or focused. */}
+      <PreviewIndex
+        hero={hero}
+        all={curated}
+        rows={featuredRows}
+        label="Featured work"
+      >
+        <div className="mx-auto max-w-[90rem] px-6 py-12 sm:px-8 sm:py-16">
+          <div className="max-w-3xl">
+            <p className="text-xs uppercase tracking-[0.18em] text-muted-fg">
+              {site.role} · {site.city}
+            </p>
+            <h1 className="mt-6 text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
+              {site.tagline}
+            </h1>
+            <p className="mt-6 max-w-xl text-lg text-muted-fg">
+              Ten years photographing people across the Kathmandu Valley — for
+              magazines, for brands, and for families who wanted one honest
+              picture of themselves.
+            </p>
+            <div className="mt-12 flex flex-wrap items-center gap-6">
+              <Link
+                href="/contact"
+                className="inline-flex cursor-pointer items-center gap-2 bg-fg px-7 py-3.5 text-base text-bg transition-colors duration-200 hover:bg-secondary active:bg-secondary"
+              >
+                Book a shoot
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </Link>
+              <Link
+                href="/services"
+                className="text-base text-muted-fg underline-offset-4 transition-colors duration-200 hover:text-fg hover:underline"
+              >
+                Packages from NPR 18,000
+              </Link>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      </PreviewIndex>
+
+      <div className="mx-auto mt-16 max-w-[90rem] px-6 sm:px-8">
+        <TypeIndex />
+      </div>
+
+      {/* Curated selection — six pieces, mixed across categories. */}
+      <section
+        aria-labelledby="selected-heading"
+        className="mx-auto max-w-[90rem] px-6 pb-16 pt-16 sm:px-8"
+      >
+        <Reveal as="div" className="flex flex-wrap items-baseline justify-between gap-6 pb-8">
+          <h2 id="selected-heading" className="text-2xl sm:text-3xl">
+            Selected work
+          </h2>
+          <Link
+            href="/work"
+            className="inline-flex cursor-pointer items-center gap-2 text-sm text-muted-fg underline-offset-4 transition-colors duration-200 hover:text-fg hover:underline"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            See all galleries
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </Link>
+        </Reveal>
+
+        <Gallery photos={curated} columns={3} label="Selected work" />
+      </section>
+
+      {/* Single closing CTA. One primary action per page. */}
+      <section className="border-y border-line bg-muted/50">
+        <div className="mx-auto flex max-w-[90rem] flex-wrap items-center justify-between gap-8 px-6 py-16 sm:px-8">
+          <div className="max-w-xl">
+            <h2 className="text-2xl sm:text-3xl">Planning a shoot?</h2>
+            <p className="mt-2 text-muted-fg">
+              Tell me who it&rsquo;s for and roughly when. I reply to every
+              enquiry within two working days, and I&rsquo;ll say plainly if
+              I&rsquo;m not the right photographer for it.
+            </p>
+          </div>
+          <Link
+            href="/contact"
+            className="inline-flex cursor-pointer items-center gap-2 bg-fg px-7 py-3.5 text-base text-bg transition-colors duration-200 hover:bg-secondary active:bg-secondary"
           >
-            Documentation
-          </a>
+            Start an enquiry
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </Link>
         </div>
-      </main>
-    </div>
+      </section>
+    </>
   );
 }
