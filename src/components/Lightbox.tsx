@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
@@ -26,6 +26,15 @@ export default function Lightbox({ photos, index, onClose, onIndexChange }: Prop
   const photo = photos[index];
   const many = photos.length > 1;
 
+  /**
+   * Zoom is per-photograph. Storing *which* photograph is zoomed rather than a
+   * boolean means moving to the next one starts unzoomed for free — no effect
+   * has to reset anything.
+   */
+  const [zoomedAt, setZoomedAt] = useState<number | null>(null);
+  const [origin, setOrigin] = useState("50% 50%");
+  const zoomed = zoomedAt === index;
+
   const go = useCallback(
     (delta: number) => {
       onIndexChange((index + delta + photos.length) % photos.length);
@@ -34,6 +43,50 @@ export default function Lightbox({ photos, index, onClose, onIndexChange }: Prop
   );
 
   // Remember what had focus so it can be handed back on close.
+  /**
+   * Deep links. The open photograph is written into the URL so it can be sent
+   * to someone, and the entry is pushed so the back button closes the viewer
+   * rather than leaving the page — the behaviour people expect from a modal on
+   * a phone. If the viewer was opened *by* a deep link there is nothing to go
+   * back to, so closing rewrites the URL instead of navigating.
+   */
+  const pushedRef = useRef(false);
+
+  useEffect(() => {
+    const hash = `#photo-${photos[index]?.id ?? ""}`;
+    if (!pushedRef.current) {
+      const cameFromLink = window.location.hash === hash;
+      if (!cameFromLink) {
+        window.history.pushState({ lightbox: true }, "", hash);
+        pushedRef.current = true;
+      }
+    } else {
+      window.history.replaceState({ lightbox: true }, "", hash);
+    }
+  }, [index, photos]);
+
+  useEffect(() => {
+    const onPop = () => {
+      pushedRef.current = false;
+      onClose();
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, [onClose]);
+
+  // Strip the photograph from the URL on the way out.
+  useEffect(
+    () => () => {
+      if (pushedRef.current) {
+        pushedRef.current = false;
+        window.history.back();
+      } else if (window.location.hash.startsWith("#photo-")) {
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+    },
+    [],
+  );
+
   useEffect(() => {
     restoreRef.current = document.activeElement as HTMLElement | null;
     closeRef.current?.focus();
@@ -58,6 +111,12 @@ export default function Lightbox({ photos, index, onClose, onIndexChange }: Prop
       if (e.key === "Escape") {
         e.preventDefault();
         onClose();
+        return;
+      }
+      if (e.key === "+" || e.key === "=" || e.key === "-") {
+        e.preventDefault();
+        setOrigin("50% 50%");
+        setZoomedAt(e.key === "-" ? null : index);
         return;
       }
       if (e.key === "ArrowRight" && many) {
@@ -99,7 +158,7 @@ export default function Lightbox({ photos, index, onClose, onIndexChange }: Prop
 
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [go, many, onClose]);
+  }, [go, index, many, onClose]);
 
   // Only ever mounted in response to a click, so `document` is present; the
   // guard keeps it safe if it is ever rendered during SSR.
@@ -171,13 +230,35 @@ export default function Lightbox({ photos, index, onClose, onIndexChange }: Prop
         )}
 
         <figure className="relative flex max-h-full flex-col items-center gap-6">
-          <Picture
-            key={photo.id}
-            photo={photo}
-            sizes="100vw"
-            loading="eager"
-            className="max-h-[72vh] !w-auto object-contain"
-          />
+          {/* Click to inspect detail — skin, eyes, grain — which is what a
+              portrait client actually wants before booking. Panning follows the
+              pointer through transform-origin, so nothing is ever cropped out
+              of reach. */}
+          <div
+            onClick={() => {
+              setOrigin("50% 50%");
+              setZoomedAt(zoomed ? null : index);
+            }}
+            onMouseMove={(e) => {
+              if (!zoomed) return;
+              const r = e.currentTarget.getBoundingClientRect();
+              setOrigin(
+                `${((e.clientX - r.left) / r.width) * 100}% ${((e.clientY - r.top) / r.height) * 100}%`,
+              );
+            }}
+            className={`overflow-hidden ${zoomed ? "cursor-zoom-out" : "cursor-zoom-in"}`}
+          >
+            <Picture
+              key={photo.id}
+              photo={photo}
+              sizes="100vw"
+              loading="eager"
+              style={{ transformOrigin: origin }}
+              className={`max-h-[72vh] !w-auto object-contain transition-transform duration-300 ease-out motion-reduce:transition-none ${
+                zoomed ? "scale-[2.2]" : "scale-100"
+              }`}
+            />
+          </div>
           <figcaption className="max-w-prose px-6 text-center text-sm text-box-fg/70">
             {photo.caption}
           </figcaption>
@@ -196,8 +277,26 @@ export default function Lightbox({ photos, index, onClose, onIndexChange }: Prop
       </div>
 
       <p className="relative hidden px-6 pb-6 text-center text-xs text-box-fg/50 sm:block">
-        Arrow keys to move between images · Esc to close
+        Arrow keys to move between images · + / − to zoom · Esc to close
       </p>
+
+      {/* Neighbours, fetched but never shown: on real photographs the next
+          arrow press would otherwise wait on a download. */}
+      {many && (
+        <div aria-hidden="true" className="pointer-events-none absolute size-0 overflow-hidden">
+          {[-1, 1].map((d) => {
+            const neighbour = photos[(index + d + photos.length) % photos.length];
+            return (
+              <Picture
+                key={`preload-${neighbour.id}`}
+                photo={neighbour}
+                sizes="100vw"
+                loading="eager"
+              />
+            );
+          })}
+        </div>
+      )}
     </div>,
     document.body,
   );

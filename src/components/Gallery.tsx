@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { Photo } from "@/data/photos";
 import { balanceColumns } from "@/lib/balance-columns";
@@ -51,6 +51,28 @@ const COLUMN_SIZES: Record<number, string> = {
 
 export default function Gallery({ photos, columns = 3, label }: Props) {
   const [openAt, setOpenAt] = useState<number | null>(null);
+
+  /**
+   * A shared link lands with #photo-<id>: open straight to that photograph.
+   * Only the gallery that actually holds it responds.
+   *
+   * Also bound to hashchange, because a link to a photograph in the page you
+   * are already on is a same-document navigation — nothing remounts, so the
+   * mount pass alone would silently do nothing.
+   */
+  useEffect(() => {
+    const openFromHash = () => {
+      const id = window.location.hash.replace("#photo-", "");
+      if (!id) return;
+      const at = photos.findIndex((p) => p.id === id);
+      // Read after hydration, never during render: deriving it during render
+      // would make the client's first paint differ from the server's.
+      if (at !== -1) setOpenAt(at);
+    };
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+    return () => window.removeEventListener("hashchange", openFromHash);
+  }, [photos]);
 
   const entries: Entry[] = photos.map((photo, index) => ({ ...photo, index }));
 

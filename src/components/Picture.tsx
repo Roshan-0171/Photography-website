@@ -25,6 +25,7 @@ type Props = {
    *             ratio is untouched; nothing is cropped.
    */
   variant?: "column" | "contain";
+  style?: React.CSSProperties;
 };
 
 const srcSet = (photo: Photo, ext: "avif" | "webp" | "jpg") =>
@@ -47,6 +48,7 @@ export default function Picture({
   className = "",
   fill = false,
   variant = "column",
+  style,
 }: Props) {
   const avif = srcSet(photo, "avif");
   const largest = photo.widths[photo.widths.length - 1];
@@ -80,6 +82,7 @@ export default function Picture({
             backgroundImage: `url("${photo.blurDataURL}")`,
             backgroundSize: "cover",
             backgroundPosition: "center",
+            ...style,
           }}
           className={
             fill
