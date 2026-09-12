@@ -78,7 +78,7 @@ export default function HomePage() {
           </Link>
         </Reveal>
 
-        <Gallery photos={curated} columns={3} label="Selected work" />
+        <Gallery photos={curated} label="Selected work" />
       </section>
 
       {/* Single closing CTA. One primary action per page. */}

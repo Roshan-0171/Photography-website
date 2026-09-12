@@ -65,9 +65,30 @@ if (meta.exif || meta.iptc || meta.xmp) {
   process.exit(1);
 }
 
-for (const name of ["opengraph-image.jpg", "twitter-image.jpg"]) {
-  await fs.writeFile(path.join(OUT_DIR, name), card);
-}
+// Only one file: X and every other scraper fall back to og:image when no
+// twitter:image is present, so a second identical 200KB copy earns nothing.
+await fs.writeFile(path.join(OUT_DIR, "opengraph-image.jpg"), card);
 console.log(
-  `  share card  ${W}×${H}  ${(card.length / 1024).toFixed(0)}KB  → src/app/{opengraph,twitter}-image.jpg`,
+  `  share card  ${W}×${H}  ${(card.length / 1024).toFixed(0)}KB  → src/app/opengraph-image.jpg`,
 );
+
+/**
+ * Favicon, from the same name. An SVG rather than a bitmap: a few hundred bytes,
+ * sharp at every size, and it follows site.ts like everything else here.
+ */
+const initials = site.name
+  .split(/\s+/)
+  .filter(Boolean)
+  .slice(0, 2)
+  .map((w) => w[0].toUpperCase())
+  .join("");
+
+const icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="8" fill="#171717"/>
+  <text x="32" y="44" text-anchor="middle" fill="#FAFAFA"
+        font-family="Helvetica, Arial, sans-serif" font-size="30"
+        font-weight="600" letter-spacing="-1">${initials}</text>
+</svg>
+`;
+await fs.writeFile(path.join(OUT_DIR, "icon.svg"), icon);
+console.log(`  favicon     ${initials}  ${icon.length}B  → src/app/icon.svg`);

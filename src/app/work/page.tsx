@@ -42,7 +42,6 @@ export default function WorkPage() {
 
           <Gallery
             photos={byCategory(c.id)}
-            columns={3}
             label={`${c.label} gallery`}
           />
         </section>

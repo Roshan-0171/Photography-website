@@ -12,8 +12,6 @@ import Tilt from "./Tilt";
 
 type Props = {
   photos: Photo[];
-  /** Column count at the widest breakpoint. */
-  columns?: 2 | 3;
   label: string;
 };
 
@@ -31,17 +29,11 @@ type Entry = Photo & { index: number };
  * The hidden ones cost markup but no bandwidth: every tile is `loading="lazy"`,
  * and a lazy image inside a `display: none` subtree is never fetched.
  */
-const LAYOUTS: Record<2 | 3, { cols: number; visibility: string }[]> = {
-  3: [
-    { cols: 1, visibility: "sm:hidden" },
-    { cols: 2, visibility: "hidden sm:flex lg:hidden" },
-    { cols: 3, visibility: "hidden lg:flex" },
-  ],
-  2: [
-    { cols: 1, visibility: "sm:hidden" },
-    { cols: 2, visibility: "hidden sm:flex" },
-  ],
-};
+const LAYOUTS = [
+  { cols: 1, visibility: "sm:hidden" },
+  { cols: 2, visibility: "hidden sm:flex lg:hidden" },
+  { cols: 3, visibility: "hidden lg:flex" },
+];
 
 const COLUMN_SIZES: Record<number, string> = {
   1: "100vw",
@@ -49,7 +41,7 @@ const COLUMN_SIZES: Record<number, string> = {
   3: "33vw",
 };
 
-export default function Gallery({ photos, columns = 3, label }: Props) {
+export default function Gallery({ photos, label }: Props) {
   const [openAt, setOpenAt] = useState<number | null>(null);
 
   /**
@@ -114,7 +106,7 @@ export default function Gallery({ photos, columns = 3, label }: Props) {
       )}
 
       <Tilt>
-      {LAYOUTS[columns].map(({ cols, visibility }) => (
+      {LAYOUTS.map(({ cols, visibility }) => (
         <div key={cols} className={`gap-6 sm:gap-8 ${visibility} ${cols === 1 ? "block" : "flex"}`}>
           {balanceColumns(rest, cols).map((column, i) => (
             <ul

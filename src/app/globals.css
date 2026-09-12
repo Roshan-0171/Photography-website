@@ -33,7 +33,6 @@
      the restrained end so the chrome still loses to the photographs. */
   --perspective: 1000px;
   --tilt-max: 4deg;
-  --lift: 6px;
   --shadow-frame:
     0 1px 2px rgb(0 0 0 / 0.05), 0 4px 8px rgb(0 0 0 / 0.05),
     0 12px 24px rgb(0 0 0 / 0.07), 0 24px 48px rgb(0 0 0 / 0.05);
@@ -169,13 +168,6 @@
     transform: perspective(var(--perspective)) rotateX(var(--tilt-x, 0deg))
       rotateY(var(--tilt-y, 0deg)) translate3d(0, 0, 0);
     will-change: transform;
-  }
-
-  /* The wall the prints hang on. Deliberately almost nothing — a photograph
-     should still be the brightest thing on the page. */
-  .gallery-wall {
-    background:
-      radial-gradient(120% 80% at 50% 0%, var(--color-muted) 0%, transparent 70%);
   }
 
   [data-tilt]:hover .print-frame,
