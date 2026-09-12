@@ -11,17 +11,15 @@ import { Moon, Sun } from "lucide-react";
  * first paint. React renders identical markup on the server and in the browser,
  * so hydration has nothing to compare.
  *
+ * The site opens light regardless of the visitor's system preference — dark is
+ * opt-in only, via this toggle, and persists through `localStorage`.
+ *
  * `aria-pressed` cannot be expressed in CSS, so it is written from an effect as a
  * DOM attribute React does not own. The header renders this twice (desktop and
  * mobile bars), so the sync is document-wide and both copies stay truthful.
  */
 export default function ThemeToggle({ className = "" }: { className?: string }) {
-  const isDark = () => {
-    const explicit = document.documentElement.getAttribute("data-theme");
-    if (explicit === "dark") return true;
-    if (explicit === "light") return false;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  };
+  const isDark = () => document.documentElement.getAttribute("data-theme") === "dark";
 
   const syncPressed = () => {
     const dark = String(isDark());
@@ -32,9 +30,6 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
 
   useEffect(() => {
     syncPressed();
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    media.addEventListener("change", syncPressed);
-    return () => media.removeEventListener("change", syncPressed);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

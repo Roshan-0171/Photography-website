@@ -60,27 +60,6 @@
      --color-field      A control border needs 3:1; the divider colour gives 2.0:1.
    Applied in three places so an explicit choice always beats the system one.
 --------------------------------------------------------------------------- */
-:root:not([data-theme="light"]) {
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-    --color-bg: #000000;
-    --color-fg: #fafafa;
-    --color-secondary: #d4d4d8;
-    --color-muted: #181818;
-    --color-muted-fg: #94a3b8;
-    --color-line: #3f3f46;
-    --color-field: #71717a;
-    --color-ring: #ffffff;
-    --color-destructive: #ef4444;
-  --shadow-frame:
-    inset 0 1px 0 rgb(255 255 255 / 0.06), 0 8px 20px rgb(0 0 0 / 0.55),
-    0 20px 44px rgb(0 0 0 / 0.45);
-  --shadow-frame-raised:
-    inset 0 1px 0 rgb(255 255 255 / 0.10), 0 14px 32px rgb(0 0 0 / 0.65),
-    0 32px 64px rgb(0 0 0 / 0.55);
-  }
-}
-
 :root[data-theme="dark"] {
   color-scheme: dark;
   --color-bg: #000000;
@@ -207,20 +186,6 @@
 
   :root[data-theme="dark"] .theme-switch-knob {
     transform: translateX(20px);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme]) .theme-icon-dark {
-      display: block;
-    }
-
-    :root:not([data-theme]) .theme-icon-light {
-      display: none;
-    }
-
-    :root:not([data-theme]) .theme-switch-knob {
-      transform: translateX(20px);
-    }
   }
 
   /* Subtle scroll reveal — 350ms / power1.out equivalent, y 12px.
