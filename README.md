@@ -169,6 +169,20 @@ What protects it, since the page shows other people's contact details:
 Set `ADMIN_SESSION_SECRET` separately from the password to be able to sign
 every device out at once without changing the password.
 
+What the list gives you:
+
+- **Status** — each enquiry is `new`, `replied` or `archived`. Mark it replied
+  once you have answered; archive spam or dead leads. Nothing is ever deleted.
+- **Tabs with counts**, and a summary strip: awaiting reply, this week, total.
+- **Search** by name or email. Filters and search are plain links and a GET
+  form, so they are bookmarkable and work with no JavaScript.
+- **Resend email** on any enquiry whose notification never went out — the
+  red-flagged ones. Same transport as the form, so it succeeds or fails under
+  the same configuration.
+
+Every button re-checks the session on the server before doing anything; a
+click from an expired session lands on the sign-in form and changes nothing.
+
 ## Still placeholder
 
 Copy on Story and Services is written to the right shape and length but is not

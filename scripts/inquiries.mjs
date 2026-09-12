@@ -59,7 +59,8 @@ for (const r of rows) {
     : "not given";
   // A stored enquiry whose email never went out is the one you must act on.
   const warn = r.notified ? "" : `  ${bold("\x1b[33m← email never sent\x1b[0m")}`;
-  console.log(`${bold(`#${r.id}  ${r.name}`)}  ${dim(when)}${warn}`);
+  const status = r.status && r.status !== "new" ? dim(`  [${r.status}]`) : "";
+  console.log(`${bold(`#${r.id}  ${r.name}`)}  ${dim(when)}${status}${warn}`);
   console.log(dim(`  ${r.email}   ${r.shoot_type}   ${date}   ${r.budget}`));
   console.log(`  ${r.message.replace(/\s+/g, " ").slice(0, 150)}`);
   console.log();

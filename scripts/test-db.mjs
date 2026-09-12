@@ -17,7 +17,13 @@ const SCHEMA = grab("SCHEMA_SQL");
 const INSERT = grab("INSERT_SQL");
 const MARK = grab("MARK_SENT_SQL");
 const RECENT = grab("RECENT_SQL");
-for (const [n, v] of [["SCHEMA", SCHEMA], ["INSERT", INSERT], ["MARK", MARK], ["RECENT", RECENT]]) {
+const LIST = grab("LIST_SQL");
+const COUNTS = grab("COUNTS_SQL");
+const WEEK = grab("WEEK_SQL");
+const SET_STATUS = grab("SET_STATUS_SQL");
+const MARK_NOTIFIED = grab("MARK_NOTIFIED_SQL");
+for (const [n, v] of [["SCHEMA", SCHEMA], ["INSERT", INSERT], ["MARK", MARK], ["RECENT", RECENT],
+  ["LIST", LIST], ["COUNTS", COUNTS], ["WEEK", WEEK], ["SET_STATUS", SET_STATUS], ["MARK_NOTIFIED", MARK_NOTIFIED]]) {
   if (!v.trim()) throw new Error(`Could not read ${n} out of inquiry-store.ts`);
 }
 
@@ -64,6 +70,31 @@ const still = await db.query("select count(*)::int as n from inquiries");
 const stored = await db.query("select name from inquiries order by id desc limit 1");
 console.log(ok(`  injection attempt stored as data, table intact (${still.rows[0].n} rows)`));
 console.log(`    stored verbatim: ${JSON.stringify(stored.rows[0].name)}`);
+
+// A table created by the previous schema (no status column) must migrate in place.
+const old = new PGlite();
+await old.query(`create table inquiries (id bigint generated always as identity primary key, created_at timestamptz not null default now(),
+  name text not null, email text not null, shoot_type text not null, preferred_date date, flexible boolean not null default false,
+  budget text not null, message text not null, ip text, notified boolean not null default false, confirmed boolean not null default false)`);
+await old.query(`insert into inquiries (name,email,shoot_type,budget,message) values ('Old Row','old@example.com','Portrait sitting','Not sure yet','from before status existed')`);
+for (const st of SCHEMA.split(";").map((x) => x.trim()).filter(Boolean)) await old.query(st);
+const migrated = await old.query("select status from inquiries");
+console.log(ok(`  existing table migrates: old row now has status '${migrated.rows[0].status}'`));
+await old.close();
+
+await db.query(SET_STATUS, [id, "replied"]);
+const byStatus = await db.query(LIST, ["replied", null, 50]);
+console.log(ok(`  filter by status: ${byStatus.rows.length} replied (${byStatus.rows.map(r => r.name).join(", ")})`));
+const search = await db.query(LIST, [null, "%bikash%", 50]);
+console.log(ok(`  search 'bikash' (case-insensitive): ${search.rows.map(r => r.name).join(", ")}`));
+const wild = await db.query(LIST, [null, "%\\%%", 50]);
+console.log(ok(`  escaped '%' search matches nobody: ${wild.rows.length} rows`));
+const counts = await db.query(COUNTS);
+console.log(ok(`  counts by status: ${counts.rows.map(r => `${r.status}=${r.n}`).join(" ")}`));
+const week = await db.query(WEEK);
+console.log(ok(`  this week: ${week.rows[0].n}`));
+await db.query(MARK_NOTIFIED, [r2.rows[0].id]);
+console.log(ok(`  mark notified works`));
 
 const cols = await db.query(
   "select column_name, data_type, is_nullable from information_schema.columns where table_name='inquiries' order by ordinal_position",

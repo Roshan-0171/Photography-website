@@ -35,7 +35,13 @@ create table if not exists inquiries (
   confirmed      boolean     not null default false
 );
 create index if not exists inquiries_created_at_idx on inquiries (created_at desc);
+alter table inquiries add column if not exists status text not null default 'new';
+create index if not exists inquiries_status_idx on inquiries (status, created_at desc);
 `;
+
+export const STATUSES = ["new", "replied", "archived"] as const;
+export type Status = (typeof STATUSES)[number];
+export const isStatus = (v: unknown): v is Status => STATUSES.includes(v as Status);
 
 export const INSERT_SQL = `
 insert into inquiries
@@ -50,10 +56,47 @@ update inquiries set notified = $2, confirmed = $3 where id = $1
 
 export const RECENT_SQL = `
 select id, created_at, name, email, shoot_type, preferred_date, flexible,
-       budget, message, notified, confirmed
+       budget, message, notified, confirmed, status
 from inquiries
 order by created_at desc
 limit $1
+`;
+
+/**
+ * Filtered list. $1 status or null for all; $2 search or null; $3 limit.
+ * The search is a case-insensitive substring over name and email. The caller
+ * escapes LIKE wildcards in the term, so a visitor typing "%" finds nobody.
+ */
+export const LIST_SQL = `
+select id, created_at, name, email, shoot_type, preferred_date, flexible,
+       budget, message, notified, confirmed, status
+from inquiries
+where ($1::text is null or status = $1)
+  and ($2::text is null or name ilike $2 or email ilike $2)
+order by created_at desc
+limit $3
+`;
+
+export const COUNTS_SQL = `
+select status, count(*)::int as n from inquiries group by status
+`;
+
+export const WEEK_SQL = `
+select count(*)::int as n from inquiries where created_at > now() - interval '7 days'
+`;
+
+export const GET_SQL = `
+select id, created_at, name, email, shoot_type, preferred_date, flexible,
+       budget, message, notified, confirmed, status
+from inquiries where id = $1
+`;
+
+export const SET_STATUS_SQL = `
+update inquiries set status = $2 where id = $1
+`;
+
+export const MARK_NOTIFIED_SQL = `
+update inquiries set notified = true where id = $1
 `;
 
 /**
@@ -166,6 +209,7 @@ export type StoredInquiry = {
   message: string;
   notified: boolean;
   confirmed: boolean;
+  status: Status;
 };
 
 /** Most recent first. Only ever called behind authentication. */
@@ -173,6 +217,54 @@ export async function recentInquiries(limit = 50): Promise<StoredInquiry[]> {
   if (!isConfigured()) return [];
   await ensureSchema();
   return (await query(RECENT_SQL, [Math.min(limit, 200)])) as StoredInquiry[];
+}
+
+/** Turns a person's search into a LIKE pattern that cannot become a wildcard. */
+const likePattern = (term: string) =>
+  `%${term.trim().replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
+
+export async function listInquiries(opts: {
+  status?: Status | null;
+  q?: string | null;
+  limit?: number;
+}): Promise<StoredInquiry[]> {
+  if (!isConfigured()) return [];
+  await ensureSchema();
+  const q = opts.q?.trim();
+  return (await query(LIST_SQL, [
+    opts.status ?? null,
+    q ? likePattern(q) : null,
+    Math.min(opts.limit ?? 100, 200),
+  ])) as StoredInquiry[];
+}
+
+export async function countInquiries(): Promise<Record<Status, number> & { week: number; all: number }> {
+  const zero = { new: 0, replied: 0, archived: 0, week: 0, all: 0 };
+  if (!isConfigured()) return zero;
+  await ensureSchema();
+  const rows = (await query(COUNTS_SQL)) as { status: Status; n: number }[];
+  const week = (await query(WEEK_SQL)) as { n: number }[];
+  const out = { ...zero, week: week[0]?.n ?? 0 };
+  for (const r of rows) if (isStatus(r.status)) out[r.status] = r.n;
+  out.all = out.new + out.replied + out.archived;
+  return out;
+}
+
+export async function getInquiry(id: number): Promise<StoredInquiry | null> {
+  if (!isConfigured()) return null;
+  await ensureSchema();
+  const rows = (await query(GET_SQL, [id])) as StoredInquiry[];
+  return rows[0] ?? null;
+}
+
+export async function setStatus(id: number, status: Status): Promise<void> {
+  if (!isConfigured()) return;
+  await query(SET_STATUS_SQL, [id, status]);
+}
+
+export async function markNotified(id: number): Promise<void> {
+  if (!isConfigured()) return;
+  await query(MARK_NOTIFIED_SQL, [id]);
 }
 
 /** Best-effort: records which emails actually went out, never blocks the reply. */
