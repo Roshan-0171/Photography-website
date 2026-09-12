@@ -30,9 +30,9 @@ export const site = {
   // PLACEHOLDER — a real profile URL, or delete the footer link that uses it.
   instagram: "https://instagram.com/",
 
-  // PLACEHOLDER — the live domain. Drives metadataBase, canonical URLs and
-  // Open Graph, and is the domain that needs the Resend DNS records.
-  url: "https://rohitshrestha.com",
+  // The live domain. Drives metadataBase, canonical URLs and Open Graph, and
+  // is the domain that needs the Resend DNS records.
+  url: "https://rohportraits.com",
 
   /** Used in the JSON-LD business record. Should match `studio` above. */
   address: {
