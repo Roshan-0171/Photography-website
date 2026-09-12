@@ -154,6 +154,27 @@ export async function saveInquiry(
   return rows[0]?.id ?? null;
 }
 
+export type StoredInquiry = {
+  id: number;
+  created_at: string;
+  name: string;
+  email: string;
+  shoot_type: string;
+  preferred_date: string | null;
+  flexible: boolean;
+  budget: string;
+  message: string;
+  notified: boolean;
+  confirmed: boolean;
+};
+
+/** Most recent first. Only ever called behind authentication. */
+export async function recentInquiries(limit = 50): Promise<StoredInquiry[]> {
+  if (!isConfigured()) return [];
+  await ensureSchema();
+  return (await query(RECENT_SQL, [Math.min(limit, 200)])) as StoredInquiry[];
+}
+
 /** Best-effort: records which emails actually went out, never blocks the reply. */
 export async function markSent(
   id: number,

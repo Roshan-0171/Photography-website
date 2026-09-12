@@ -17,6 +17,13 @@ const WINDOW_MS =
   Number(process.env.RATE_LIMIT_WINDOW_MINUTES ?? 60) * 60 * 1000;
 const MAX = Number(process.env.RATE_LIMIT_MAX ?? 5);
 
+export type RateLimitOptions = {
+  /** Attempts allowed in the window. Defaults to RATE_LIMIT_MAX. */
+  max?: number;
+  /** Window length in milliseconds. Defaults to RATE_LIMIT_WINDOW_MINUTES. */
+  windowMs?: number;
+};
+
 export type RateLimitVerdict = {
   allowed: boolean;
   /** Attempts left in the current window, after counting this one. */
@@ -37,13 +44,13 @@ function sweep(now: number) {
   }
 }
 
-function checkMemory(key: string, now: number): RateLimitVerdict {
+function checkMemory(key: string, now: number, max: number, windowMs: number): RateLimitVerdict {
   sweep(now);
-  const cutoff = now - WINDOW_MS;
+  const cutoff = now - windowMs;
   const times = (hits.get(key) ?? []).filter((t) => t > cutoff);
   times.push(now);
   hits.set(key, times);
-  return { allowed: times.length <= MAX, remaining: Math.max(0, MAX - times.length) };
+  return { allowed: times.length <= max, remaining: Math.max(0, max - times.length) };
 }
 
 // --- Upstash Redis store ---------------------------------------------------
@@ -51,7 +58,12 @@ function checkMemory(key: string, now: number): RateLimitVerdict {
 const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
 const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-async function checkUpstash(key: string, now: number): Promise<RateLimitVerdict> {
+async function checkUpstash(
+  key: string,
+  now: number,
+  max: number,
+  windowMs: number,
+): Promise<RateLimitVerdict> {
   const k = `ratelimit:${key}`;
   const member = `${now}-${Math.random().toString(36).slice(2, 10)}`;
 
@@ -62,10 +74,10 @@ async function checkUpstash(key: string, now: number): Promise<RateLimitVerdict>
       "Content-Type": "application/json",
     },
     body: JSON.stringify([
-      ["ZREMRANGEBYSCORE", k, 0, now - WINDOW_MS],
+      ["ZREMRANGEBYSCORE", k, 0, now - windowMs],
       ["ZADD", k, now, member],
       ["ZCARD", k],
-      ["PEXPIRE", k, WINDOW_MS],
+      ["PEXPIRE", k, windowMs],
     ]),
     cache: "no-store",
   });
@@ -74,17 +86,22 @@ async function checkUpstash(key: string, now: number): Promise<RateLimitVerdict>
 
   const parsed = (await res.json()) as { result: number }[];
   const count = Number(parsed[2]?.result ?? 0);
-  return { allowed: count <= MAX, remaining: Math.max(0, MAX - count) };
+  return { allowed: count <= max, remaining: Math.max(0, max - count) };
 }
 
 // --- public API ------------------------------------------------------------
 
-export async function rateLimit(key: string): Promise<RateLimitVerdict> {
+export async function rateLimit(
+  key: string,
+  options: RateLimitOptions = {},
+): Promise<RateLimitVerdict> {
   const now = Date.now();
+  const max = options.max ?? MAX;
+  const windowMs = options.windowMs ?? WINDOW_MS;
 
   if (UPSTASH_URL && UPSTASH_TOKEN) {
     try {
-      return await checkUpstash(key, now);
+      return await checkUpstash(key, now, max, windowMs);
     } catch (error) {
       // A rate limiter that is down must not take the contact form down with
       // it. Fall through to the in-process counter rather than rejecting.
@@ -92,7 +109,7 @@ export async function rateLimit(key: string): Promise<RateLimitVerdict> {
     }
   }
 
-  return checkMemory(key, now);
+  return checkMemory(key, now, max, windowMs);
 }
 
 /**

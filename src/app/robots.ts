@@ -7,8 +7,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // Nothing here should be indexed as a page in its own right.
-      disallow: ["/api/"],
+      // The admin page lists other people's contact details. It is also
+      // noindex in its own metadata — this just keeps crawlers away entirely.
+      disallow: ["/api/", "/admin"],
     },
     sitemap: `${site.url}/sitemap.xml`,
   };

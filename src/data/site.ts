@@ -32,7 +32,7 @@ export const site = {
 
   // PLACEHOLDER — the live domain. Drives metadataBase, canonical URLs and
   // Open Graph, and is the domain that needs the Resend DNS records.
-  url: "https://rohitshrestha.photo",
+  url: "https://rohitshrestha.com",
 
   /** Used in the JSON-LD business record. Should match `studio` above. */
   address: {

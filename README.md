@@ -138,6 +138,33 @@ Postgres would be absurd. With no `DATABASE_URL` the old behaviour applies
 unchanged. The stored row records whether each email actually went out, and
 `npm run inquiries` flags any enquiry you were never emailed about.
 
+## Reading enquiries from your phone
+
+`/admin` lists stored enquiries behind a password. It is off by default: with
+no `ADMIN_PASSWORD` set the route returns 404, so there is no login form to
+probe and no hint that anything lives there.
+
+```bash
+openssl rand -base64 24    # generate a password; paste it into .env.local
+```
+
+What protects it, since the page shows other people's contact details:
+
+- **Nothing is read from the database until you are signed in.** A signed-out
+  response contains a login form and no enquiry data — verified by grepping
+  the HTML for every test name and address.
+- **Five sign-in attempts an hour per IP**, in a separate bucket from the
+  enquiry form. A throttled request gets the same message as a wrong password,
+  so a guesser cannot tell the two apart.
+- **Signed session cookie** — `httpOnly`, `SameSite=Strict`, `Secure` in
+  production, seven days. Forging the signature or extending the expiry both
+  fail. Password and signature are compared in constant time.
+- `noindex, nofollow` in the page, `Disallow: /admin` in robots.txt, and
+  `Cache-Control: no-store` — it is never prerendered or cached.
+
+Set `ADMIN_SESSION_SECRET` separately from the password to be able to sign
+every device out at once without changing the password.
+
 ## Still placeholder
 
 Copy on Story and Services is written to the right shape and length but is not
