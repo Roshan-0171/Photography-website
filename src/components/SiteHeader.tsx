@@ -22,7 +22,7 @@ export default function SiteHeader() {
           href="/"
           className="font-display text-base font-medium tracking-tight text-fg sm:text-lg"
         >
-          {site.name}
+          {pathname.startsWith("/admin") ? "Dashboard" : site.name}
           <span className="sr-only"> — home</span>
         </Link>
 
