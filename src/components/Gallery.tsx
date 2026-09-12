@@ -13,6 +13,23 @@ import Tilt from "./Tilt";
 type Props = {
   photos: Photo[];
   label: string;
+  /**
+   * The full sequence the lightbox should step through, when it is bigger
+   * than what this Gallery instance renders as tiles. Defaults to `photos`.
+   *
+   * The home page shows one logical set of curated photographs as two visual
+   * grids — portrait-shaped and landscape-shaped, kept ratio-pure so their
+   * rows align. Without this, each grid's Lightbox only ever knew about its
+   * own half: opening a photo showed "1 of 9" and arrow keys wrapped after 9,
+   * silently never reaching the other group. Passing the combined list here
+   * makes arrow-key navigation walk the whole set in order, regardless of
+   * which visual grid a photograph was opened from.
+   *
+   * /work's per-category galleries deliberately do NOT pass this — there,
+   * each category is its own independent browsing context, and that
+   * separation is correct, not a bug.
+   */
+  navigationPhotos?: Photo[];
 };
 
 /** A photograph plus its position in the original list, so the lightbox order
@@ -41,8 +58,9 @@ const COLUMN_SIZES: Record<number, string> = {
   3: "33vw",
 };
 
-export default function Gallery({ photos, label }: Props) {
+export default function Gallery({ photos, label, navigationPhotos }: Props) {
   const [openAt, setOpenAt] = useState<number | null>(null);
+  const navList = navigationPhotos ?? photos;
 
   /**
    * A shared link lands with #photo-<id>: open straight to that photograph.
@@ -56,7 +74,11 @@ export default function Gallery({ photos, label }: Props) {
     const openFromHash = () => {
       const id = window.location.hash.replace("#photo-", "");
       if (!id) return;
-      const at = photos.findIndex((p) => p.id === id);
+      // Only the Gallery whose own tiles actually include this photo should
+      // react — otherwise, when navList is shared across two instances, both
+      // would independently open a Lightbox for the same hash.
+      if (!photos.some((p) => p.id === id)) return;
+      const at = navList.findIndex((p) => p.id === id);
       // Read after hydration, never during render: deriving it during render
       // would make the client's first paint differ from the server's.
       if (at !== -1) setOpenAt(at);
@@ -64,9 +86,16 @@ export default function Gallery({ photos, label }: Props) {
     openFromHash();
     window.addEventListener("hashchange", openFromHash);
     return () => window.removeEventListener("hashchange", openFromHash);
-  }, [photos]);
+  }, [photos, navList]);
 
-  const entries: Entry[] = photos.map((photo, index) => ({ ...photo, index }));
+  // Each tile's index is its position in navList (the full navigable set),
+  // not its position in `photos` (what this instance happens to render) —
+  // otherwise every grid's tiles would number 0..N-1 independently and the
+  // Lightbox would open on the wrong photo whenever the two disagree.
+  const entries: Entry[] = photos.map((photo) => ({
+    ...photo,
+    index: navList.findIndex((p) => p.id === photo.id),
+  }));
 
   // At most one featured photograph, by construction: `find` stops at the first.
   // With none flagged the page is simply a balanced grid, which is the normal case.
@@ -127,7 +156,7 @@ export default function Gallery({ photos, label }: Props) {
 
       {openAt !== null && (
         <Lightbox
-          photos={photos}
+          photos={navList}
           index={openAt}
           onIndexChange={setOpenAt}
           onClose={() => setOpenAt(null)}

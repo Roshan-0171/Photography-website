@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import Gallery from "@/components/Gallery";
 import Picture from "@/components/Picture";
 import Reveal from "@/components/Reveal";
-import { curatedLandscape, curatedPortrait, hero } from "@/data/photos";
+import { curated, curatedLandscape, curatedPortrait, hero } from "@/data/photos";
 
 export default function HomePage() {
   return (
@@ -40,8 +40,8 @@ export default function HomePage() {
             Mixing orientations in one masonry pass is what produced the drift
             this replaces. */}
         <div className="space-y-12 sm:space-y-16">
-          <Gallery photos={curatedPortrait} label="Selected work, portrait-shaped" />
-          <Gallery photos={curatedLandscape} label="Selected work, landscape-shaped" />
+          <Gallery photos={curatedPortrait} navigationPhotos={curated} label="Selected work, portrait-shaped" />
+          <Gallery photos={curatedLandscape} navigationPhotos={curated} label="Selected work, landscape-shaped" />
         </div>
       </section>
     </>
