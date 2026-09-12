@@ -2,14 +2,13 @@ import Link from "next/link";
 
 import { byCategory, categories } from "@/data/photos";
 
-/** "7" → "07", matching the reference's fixed-width counts. */
-const pad = (n: number) => String(n).padStart(2, "0");
-
 /**
- * Browse by type. A count-bearing filter row rather than plain navigation —
- * the number tells you how much work sits behind each label before you click.
+ * Browse by type, on the home page. A count-bearing nav rather than plain
+ * links — the number tells you how much work sits behind each label before
+ * you click. /work itself now uses a filter (WorkFilter), not this component;
+ * this is the one remaining caller.
  */
-export default function TypeIndex({ base = "/work" }: { base?: string }) {
+export default function TypeIndex() {
   return (
     <nav aria-label="Browse by type" className="border-y border-line py-4">
       <h2 className="text-xs uppercase tracking-[0.14em] text-muted-fg">
@@ -19,12 +18,14 @@ export default function TypeIndex({ base = "/work" }: { base?: string }) {
         {categories.map((c) => (
           <li key={c.id}>
             <Link
-              href={`${base}#${c.id}`}
+              href={`/work?type=${c.id}`}
               className="inline-flex min-h-11 cursor-pointer items-baseline gap-2 text-sm uppercase tracking-[0.12em] text-fg underline-offset-4 transition-colors duration-200 hover:underline"
             >
               {c.label}
+              {/* An em dash, not a run-together count — "Portrait07" reads to
+                  a screen reader as "Portrait zero seven". */}
               <span className="text-xs tabular-nums text-muted-fg">
-                {pad(byCategory(c.id).length)}
+                — {byCategory(c.id).length}
               </span>
             </Link>
           </li>

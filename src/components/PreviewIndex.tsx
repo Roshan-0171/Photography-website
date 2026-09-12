@@ -86,7 +86,7 @@ export default function PreviewIndex({ hero, all, rows, label, children }: Props
                 ref={(el) => {
                   linkRefs.current[i] = el;
                 }}
-                href={`/work#${row.photo.category}`}
+                href={`/work?type=${row.photo.category}`}
                 onMouseEnter={() => setActiveRow(i)}
                 onMouseLeave={() => setActiveRow(null)}
                 onFocus={() => setActiveRow(i)}
