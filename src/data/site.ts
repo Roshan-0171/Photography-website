@@ -17,10 +17,9 @@ export const site = {
   city: "Kathmandu, Nepal",
   tagline: "Portraits made slowly, in the light people actually live in.",
 
-  // PLACEHOLDER — must be a mailbox you actually read. It is published in the
-  // footer, on /contact, in the JSON-LD, and it is what a visitor is told to
-  // write to when an enquiry fails to send.
-  email: "roshan.star180@gmail.com",
+  // Published in the footer, on /contact, in the JSON-LD, and it is what a
+  // visitor is told to write to when an enquiry fails to send.
+  email: "rohportraits@gmail.com",
 
   // PLACEHOLDER — a real, reachable number.
   phone: "+977 9800 000 000",
