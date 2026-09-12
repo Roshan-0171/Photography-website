@@ -60,12 +60,14 @@ export default function StoryPage() {
               and I have been making my own pictures full time since 2018.
             </p>
             <p>
-              The work divides roughly in three. Commissioned portraits —
+              The work divides roughly in four. Commissioned portraits —
               families, founders, musicians, anyone who needs one good picture
               of themselves. Editorial assignments for magazines and hospitality
-              brands, usually people photographed at their trade. And personal
-              work: the valley in monsoon, festival crowds, the ridge at dusk.
-              That last category pays nothing and is the reason I do the rest.
+              brands, usually people photographed at their trade. Weddings,
+              photographed the way they happen rather than the way they are
+              staged. And personal work: the valley in monsoon, festival
+              crowds, the ridge at dusk. That last category pays nothing and is
+              the reason I do the rest.
             </p>
             <p>
               I work in English and Nepali. My studio is in{" "}

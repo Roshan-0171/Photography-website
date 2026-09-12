@@ -1,7 +1,7 @@
 /** Shape of one entry in photos.generated.ts. */
 export type GeneratedPhoto = {
   id: string;
-  category: "portrait" | "editorial" | "personal" | "hero" | "about";
+  category: "portrait" | "editorial" | "wedding" | "personal" | "hero" | "about";
   /** Intrinsic pixel dimensions, read from the original file — never hand-entered. */
   width: number;
   height: number;

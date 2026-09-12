@@ -2,7 +2,7 @@ import { generatedPhotos } from "./photos.generated";
 import type { GeneratedPhoto } from "./photo-types";
 
 export type Photo = GeneratedPhoto;
-export type Category = "portrait" | "editorial" | "personal";
+export type Category = "portrait" | "editorial" | "wedding" | "personal";
 
 /** The three galleries, in the order they appear on /work. */
 export const categories: { id: Category; label: string; blurb: string }[] = [
@@ -19,6 +19,12 @@ export const categories: { id: Category; label: string; blurb: string }[] = [
       "Commissioned work for magazines, brands and hospitality — people photographed at what they do.",
   },
   {
+    id: "wedding",
+    label: "Wedding",
+    blurb:
+      "The day as it happened — the waiting, the veil, the first look. Unposed where it matters, directed only where it helps.",
+  },
+  {
     id: "personal",
     label: "Personal",
     blurb:
@@ -26,7 +32,7 @@ export const categories: { id: Category; label: string; blurb: string }[] = [
   },
 ];
 
-const GALLERY: Category[] = ["portrait", "editorial", "personal"];
+const GALLERY: Category[] = ["portrait", "editorial", "wedding", "personal"];
 
 function required(id: string): Photo {
   const photo = generatedPhotos.find((p) => p.id === id);
@@ -45,7 +51,7 @@ export const photos: Photo[] = generatedPhotos.filter((p) =>
 
 export const byCategory = (c: Category) => photos.filter((p) => p.category === c);
 
-export const hero = required("patan-rooftop");
+export const hero = required("patan-sunset");
 export const selfPortrait = required("self-portrait");
 
 /**
@@ -53,10 +59,10 @@ export const selfPortrait = required("self-portrait");
  * Edit this list to change what appears on the front page.
  */
 export const curated: Photo[] = [
-  "studio-north-light",
-  "thamel-street-style",
-  "grandmother-window",
-  "monsoon-rooftops",
-  "textile-designer-loom",
-  "brothers-doorway",
+  "window-light-sitting",
+  "bride-in-red",
+  "saree-in-the-forest",
+  "swayambhu-eyes",
+  "doorway-smile",
+  "under-the-veil",
 ].map(required);

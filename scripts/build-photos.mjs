@@ -37,7 +37,7 @@ const FORMATS = /** @type {const} */ (["avif", "webp", "jpg"]);
 const QUALITY = { avif: 55, webp: 76, jpg: 82 };
 
 /** Categories that appear in the galleries, in the order they are shown. */
-const GALLERY_CATEGORIES = ["portrait", "editorial", "personal"];
+const GALLERY_CATEGORIES = ["portrait", "editorial", "wedding", "personal"];
 /** Single-purpose images that live outside the galleries. */
 const SINGLETON_CATEGORIES = ["hero", "about"];
 

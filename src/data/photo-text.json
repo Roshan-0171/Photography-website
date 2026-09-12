@@ -1,117 +1,153 @@
 {
-  "brothers-doorway": {
+  "afternoon-shadow": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "chef-kitchen-steam": {
+  "dappled-shade": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "courtyard-patan": {
+  "doorway-smile": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "dancer-backstage": {
+  "field-at-golden-hour": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "grandmother-window": {
+  "hands-and-quiet": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "sarangi-players-hands": {
+  "low-light-study": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "studio-north-light": {
+  "window-light-sitting": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "boutique-hotel-terrace": {
+  "monochrome-cover-look": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "ceramics-studio-bhaktapur": {
+  "newsprint-still": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "cover-look-newari-textile": {
+  "red-at-dusk": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "tea-house-owner": {
+  "red-suit-magazine": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "textile-designer-loom": {
+  "saree-in-the-forest": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "thamel-street-style": {
+  "urban-editorial": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "bagmati-first-light": {
+  "bouquet-of-tulips": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "indra-jatra-crowd": {
+  "bride-and-mirror": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "langtang-ridge-dusk": {
+  "bride-in-red": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "monsoon-rooftops": {
+  "first-look": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "window-still-life": {
+  "the-dress-waiting": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
   },
-  "patan-rooftop": {
+  "under-the-veil": {
     "alt": "",
     "caption": "",
-    "featured": false,
-    "year": null
+    "year": null,
+    "featured": false
+  },
+  "bagmati-ghats": {
+    "alt": "",
+    "caption": "",
+    "year": null,
+    "featured": false
+  },
+  "bhaktapur-at-first-light": {
+    "alt": "",
+    "caption": "",
+    "year": null,
+    "featured": false
+  },
+  "boudha-prayer-flags": {
+    "alt": "",
+    "caption": "",
+    "year": null,
+    "featured": false
+  },
+  "patan-from-above": {
+    "alt": "",
+    "caption": "",
+    "year": null,
+    "featured": false
+  },
+  "swayambhu-eyes": {
+    "alt": "",
+    "caption": "",
+    "year": null,
+    "featured": false
+  },
+  "patan-sunset": {
+    "alt": "",
+    "caption": "",
+    "year": null,
+    "featured": false
   },
   "self-portrait": {
     "alt": "",
