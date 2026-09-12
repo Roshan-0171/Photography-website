@@ -11,20 +11,37 @@
 import { neon } from "@neondatabase/serverless";
 import fs from "node:fs/promises";
 
-if (!process.env.DATABASE_URL) {
-  console.error(
-    "\nDATABASE_URL is not set, so nothing is being stored.\n" +
-      "Add it to .env.local — see .env.example. Until then the notification\n" +
-      "email is the only record of an enquiry.\n",
-  );
-  process.exit(1);
-}
-
 const src = await fs.readFile("src/lib/inquiry-store.ts", "utf8");
 const RECENT = /export const RECENT_SQL = `([\s\S]*?)`/.exec(src)[1];
+const LOCAL_DIR = /export const LOCAL_DIR = "([^"]+)"/.exec(src)[1];
 
 const limit = Number(process.argv[2]) || 20;
-const rows = await neon(process.env.DATABASE_URL).query(RECENT, [limit]);
+
+/** Reads whichever database the site is actually writing to. */
+async function read() {
+  if (process.env.DATABASE_URL) {
+    return neon(process.env.DATABASE_URL).query(RECENT, [limit]);
+  }
+  if (!(await fs.stat(LOCAL_DIR).catch(() => null))) {
+    console.error(
+      `\nNo enquiries stored yet.\n\n` +
+        `DATABASE_URL is not set, so development writes to ${LOCAL_DIR}/ — which\n` +
+        `does not exist until the first enquiry is submitted. Run the site and\n` +
+        `send one, or set DATABASE_URL in .env.local for a real database.\n`,
+    );
+    process.exit(1);
+  }
+  const { PGlite } = await import("@electric-sql/pglite");
+  const db = new PGlite(LOCAL_DIR);
+  const res = await db.query(RECENT, [limit]);
+  await db.close();
+  return res.rows;
+}
+
+const rows = await read();
+if (!process.env.DATABASE_URL) {
+  console.log(`\n\x1b[2mreading the local development database (${LOCAL_DIR}/)\x1b[0m`);
+}
 
 if (rows.length === 0) {
   console.log("\nNo enquiries yet.\n");

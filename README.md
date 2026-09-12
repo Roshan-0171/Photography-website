@@ -114,8 +114,22 @@ npm run inquiries -- 50
 npm run test:db          # runs the schema and queries against real Postgres
 ```
 
-Free database at [neon.tech](https://neon.tech); paste the pooled connection
-string into `.env.local`. The table is created on first use.
+Where a row goes:
+
+| `DATABASE_URL` | Environment | Storage |
+|---|---|---|
+| set | anywhere | Neon Postgres, over HTTP |
+| unset | development | a local Postgres file in `.pgdata/` — no account, no server |
+| unset | production | off; the notification email is the only record |
+
+So storage works in development straight away: run the site, send an enquiry,
+then `npm run inquiries`. The local database is PGlite — the same Postgres engine
+the SQL is tested against — held in a gitignored directory, and it is a
+devDependency that never reaches production.
+
+For anything deployed, create a free database at [neon.tech](https://neon.tech)
+and paste the pooled connection string into `.env.local`. The table is created on
+first use.
 
 **What this changes:** an enquiry now survives if *either* the database row or
 the notification email lands, rather than the email alone. Only losing both is a

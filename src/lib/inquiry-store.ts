@@ -56,10 +56,66 @@ order by created_at desc
 limit $1
 `;
 
-/** No DATABASE_URL means no database, and that is a supported configuration. */
-export const isConfigured = () => Boolean(process.env.DATABASE_URL);
+/**
+ * Where a row actually goes.
+ *
+ *   DATABASE_URL set          → Neon, over HTTP. This is production.
+ *   unset, and not production → a local Postgres file under .pgdata/, so
+ *                               storage works in development with no account
+ *                               and no server to install.
+ *   unset, in production      → storage is off, and that is supported: the
+ *                               notification email remains the only record.
+ *
+ * The local backend is PGlite — Postgres compiled to WASM, the same engine the
+ * SQL is tested against. It is a devDependency and is only ever imported when
+ * the branch above is taken, so it never reaches a production bundle.
+ */
+export const LOCAL_DIR = ".pgdata";
 
-const client = () => neon(process.env.DATABASE_URL as string);
+const localBacked = () =>
+  !process.env.DATABASE_URL && process.env.NODE_ENV !== "production";
+
+export const isConfigured = () => Boolean(process.env.DATABASE_URL) || localBacked();
+
+/** Survives hot reloads, which would otherwise open a new database per edit. */
+const globalForPglite = globalThis as typeof globalThis & {
+  __pglite?: Promise<{ query: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> }>;
+};
+
+type LocalDb = { query: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> };
+
+/**
+ * Loaded through a specifier assembled at runtime, so no bundler can resolve it
+ * statically. That matters: PGlite is a devDependency, and a production install
+ * prunes it — a static import makes the build fail there even though this code
+ * path can never be reached in production. `serverExternalPackages` alone is not
+ * enough, because the module is still resolved while building.
+ */
+async function loadPglite(): Promise<new (dir: string) => LocalDb> {
+  const specifier = ["@electric-sql", "pglite"].join("/");
+  const mod = (await import(/* turbopackIgnore: true */ /* webpackIgnore: true */ specifier)) as {
+    PGlite: new (dir: string) => LocalDb;
+  };
+  return mod.PGlite;
+}
+
+function localClient() {
+  globalForPglite.__pglite ??= (async () => {
+    const PGlite = await loadPglite();
+    console.info(
+      `[inquiry] no DATABASE_URL — storing enquiries locally in ${LOCAL_DIR}/. ` +
+        `Set DATABASE_URL before deploying.`,
+    );
+    return new PGlite(LOCAL_DIR);
+  })();
+  return globalForPglite.__pglite;
+}
+
+/** One entry point, so the two backends cannot drift apart. */
+async function query(sql: string, params: unknown[] = []): Promise<unknown[]> {
+  if (localBacked()) return (await (await localClient()).query(sql, params)).rows;
+  return (await neon(process.env.DATABASE_URL as string).query(sql, params)) as unknown[];
+}
 
 let schemaReady: Promise<void> | null = null;
 
@@ -69,9 +125,8 @@ let schemaReady: Promise<void> | null = null;
  */
 function ensureSchema(): Promise<void> {
   schemaReady ??= (async () => {
-    const sql = client();
     for (const statement of SCHEMA_SQL.split(";").map((s) => s.trim()).filter(Boolean)) {
-      await sql.query(statement);
+      await query(statement);
     }
   })();
   return schemaReady;
@@ -85,7 +140,7 @@ export async function saveInquiry(
   if (!isConfigured()) return null;
 
   await ensureSchema();
-  const rows = (await client().query(INSERT_SQL, [
+  const rows = (await query(INSERT_SQL, [
     values.name,
     values.email,
     values.shootType,
@@ -106,5 +161,5 @@ export async function markSent(
   confirmed: boolean,
 ): Promise<void> {
   if (!isConfigured()) return;
-  await client().query(MARK_SENT_SQL, [id, notified, confirmed]);
+  await query(MARK_SENT_SQL, [id, notified, confirmed]);
 }

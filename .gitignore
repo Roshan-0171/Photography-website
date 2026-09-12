@@ -46,3 +46,6 @@ next-env.d.ts
 # Only the generated derivatives in public/photos/ are committed.
 photos-source/
 .photo-cache.json
+
+# Local development database (PGlite). Never deployed.
+.pgdata/
