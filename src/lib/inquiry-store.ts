@@ -122,10 +122,13 @@ export const isConfigured = () => Boolean(process.env.DATABASE_URL) || localBack
 
 /** Survives hot reloads, which would otherwise open a new database per edit. */
 const globalForPglite = globalThis as typeof globalThis & {
-  __pglite?: Promise<{ query: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> }>;
+  __pglite?: Promise<LocalDb>;
 };
 
-type LocalDb = { query: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> };
+type LocalDb = {
+  query: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }>;
+  exec: (sql: string) => Promise<unknown>;
+};
 
 /**
  * Loaded through a specifier assembled at runtime, so no bundler can resolve it
@@ -165,12 +168,20 @@ let schemaReady: Promise<void> | null = null;
 /**
  * Creates the table on first use. `if not exists` makes it safe to run on every
  * cold start, and the promise is cached so concurrent requests do it once.
+ *
+ * All statements go in a single request. Neon's HTTP endpoint takes one
+ * statement per query, so they were four sequential round trips — from
+ * Kathmandu to us-east-2 that alone was over a second on every cold start.
  */
 function ensureSchema(): Promise<void> {
   schemaReady ??= (async () => {
-    for (const statement of SCHEMA_SQL.split(";").map((s) => s.trim()).filter(Boolean)) {
-      await query(statement);
+    const statements = SCHEMA_SQL.split(";").map((s) => s.trim()).filter(Boolean);
+    if (localBacked()) {
+      await (await localClient()).exec(SCHEMA_SQL);
+      return;
     }
+    const sql = neon(process.env.DATABASE_URL as string);
+    await sql.transaction(statements.map((st) => sql.query(st)));
   })();
   return schemaReady;
 }

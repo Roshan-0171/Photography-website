@@ -12,7 +12,12 @@ import {
 import { confirmationEmail, type InquiryValues } from "@/data/emails";
 import { send, sendNotification } from "@/lib/mail";
 import { clientKey, rateLimit } from "@/lib/rate-limit";
-import { isConfigured as storeConfigured, markSent, saveInquiry } from "@/lib/inquiry-store";
+import {
+  isConfigured as storeConfigured,
+  markNotified,
+  markSent,
+  saveInquiry,
+} from "@/lib/inquiry-store";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -113,6 +118,10 @@ export async function submitInquiry(
   try {
     await sendNotification(values);
     notified = true;
+    // Recorded immediately, not after the confirmation email. The flag drives
+    // the "never sent" warning and the Resend button; if the visitor closes
+    // the tab before the action finishes, it must already be true.
+    if (rowId !== null) await markNotified(rowId).catch(() => undefined);
   } catch (error) {
     /**
      * The payload is written to the log ONLY when there is no stored row — in
