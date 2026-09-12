@@ -1,26 +1,271 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ---------------------------------------------------------------------------
+   Design tokens — "Kathmandu Photographer"
+   Source: ui-ux-pro-max design system (design-system/kathmandu-photographer/)
+   Style:  Minimalism & Swiss Style
+   Colors: Architecture/Interior light row (approved light-chrome override of the
+           Photography Studio dark row, whose black surface is kept for the
+           lightbox only — see MASTER.md "Approved overrides").
+   Density: 3/10 — Spacious
+--------------------------------------------------------------------------- */
+
+@theme {
+  /* Chrome — light. The photographs supply the colour; the UI stays neutral. */
+  --color-bg: #ffffff;
+  --color-fg: #171717;
+  --color-secondary: #404040;
+  --color-muted: #e8ecf0;
+  --color-muted-fg: #475569;
+  --color-line: #e5e5e5;
+  /* Form-control borders are UI components: WCAG 1.4.11 wants 3:1, which the
+     decorative divider colour above does not reach against white (1.26:1). */
+  --color-field: #767676;
+  --color-ring: #171717;
+  --color-destructive: #dc2626;
+
+  /* Lightbox — the one dark surface, from the Photography Studio row. */
+  --color-box: #000000;
+  --color-box-fg: #fafafa;
+  --color-box-line: #3f3f46;
+
+  /* Depth. Values from the 3D & Hyperrealism row of the design system, kept at
+     the restrained end so the chrome still loses to the photographs. */
+  --perspective: 1000px;
+  --tilt-max: 4deg;
+  --lift: 6px;
+  --shadow-frame:
+    0 1px 2px rgb(0 0 0 / 0.05), 0 4px 8px rgb(0 0 0 / 0.05),
+    0 12px 24px rgb(0 0 0 / 0.07), 0 24px 48px rgb(0 0 0 / 0.05);
+  --shadow-frame-raised:
+    0 2px 4px rgb(0 0 0 / 0.06), 0 8px 16px rgb(0 0 0 / 0.08),
+    0 20px 40px rgb(0 0 0 / 0.10), 0 40px 72px rgb(0 0 0 / 0.08);
+
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+
+  /* Spacious scale, density 3/10. Expressed through Tailwind's numeric spacing
+     utilities rather than t-shirt tokens: naming these --spacing-md / --spacing-3xl
+     would also redefine max-w-md / max-w-3xl, which share that namespace in v4.
+       xs 4px = 1 · sm 8px = 2 · md 24px = 6 · lg 32px = 8
+       xl 48px = 12 · 2xl 64px = 16 · 3xl 96px = 24                              */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ---------------------------------------------------------------------------
+   Dark palette — Photography Studio row from the design system.
+   Two values are deliberately NOT the database's:
+     --color-secondary  DB #27272A is a surface tone, but this token also carries
+                        body prose (the Story page). #27272A on black is 1.41:1.
+                        #D4D4D8 mirrors light mode's mid-grey and reads both as
+                        text on black (14.2:1) and as a button fill under black.
+     --color-field      A control border needs 3:1; the divider colour gives 2.0:1.
+   Applied in three places so an explicit choice always beats the system one.
+--------------------------------------------------------------------------- */
+:root:not([data-theme="light"]) {
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+    --color-bg: #000000;
+    --color-fg: #fafafa;
+    --color-secondary: #d4d4d8;
+    --color-muted: #181818;
+    --color-muted-fg: #94a3b8;
+    --color-line: #3f3f46;
+    --color-field: #71717a;
+    --color-ring: #ffffff;
+    --color-destructive: #ef4444;
+  --shadow-frame:
+    inset 0 1px 0 rgb(255 255 255 / 0.06), 0 8px 20px rgb(0 0 0 / 0.55),
+    0 20px 44px rgb(0 0 0 / 0.45);
+  --shadow-frame-raised:
+    inset 0 1px 0 rgb(255 255 255 / 0.10), 0 14px 32px rgb(0 0 0 / 0.65),
+    0 32px 64px rgb(0 0 0 / 0.55);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #000000;
+  --color-fg: #fafafa;
+  --color-secondary: #d4d4d8;
+  --color-muted: #181818;
+  --color-muted-fg: #94a3b8;
+  --color-line: #3f3f46;
+  --color-field: #71717a;
+  --color-ring: #ffffff;
+  --color-destructive: #ef4444;
+  --shadow-frame:
+    inset 0 1px 0 rgb(255 255 255 / 0.06), 0 8px 20px rgb(0 0 0 / 0.55),
+    0 20px 44px rgb(0 0 0 / 0.45);
+  --shadow-frame-raised:
+    inset 0 1px 0 rgb(255 255 255 / 0.10), 0 14px 32px rgb(0 0 0 / 0.65),
+    0 32px 64px rgb(0 0 0 / 0.55);
+}
+
+@layer base {
+  html {
+    /* Sticky header must never obscure keyboard focus (WCAG 2.2 AA). */
+    scroll-padding-top: 6rem;
+
+    /* Keeps native controls — the shoot-type select, the date picker — in step
+       with the chosen theme. Overridden by the dark blocks above. */
+    color-scheme: light;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    text-wrap: balance;
+    /* At large display sizes a single long word can be wider than a narrow
+       column — especially at 200% text. break-word breaks only when a word
+       genuinely cannot fit; hyphens:auto is deliberately NOT used, because with
+       text-wrap:balance it hyphenates opportunistically and splits words that
+       would have fitted perfectly well on the next line. */
+    overflow-wrap: break-word;
+  }
+
+  p {
+    text-wrap: pretty;
+    overflow-wrap: break-word;
+  }
+
+  /* 2px perimeter at 3:1+ state contrast. Never removed. */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--color-fg);
+    color: var(--color-bg);
+  }
+}
+
+@layer utilities {
+  /* A photograph presented as a physical print: mat board around it, a hairline
+     frame edge, and a layered cast shadow. The mat surrounds the image — it
+     never crops it, so the no-crop rule still holds. */
+  .print-frame {
+    background: var(--color-bg);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--shadow-frame);
+    transition:
+      box-shadow 320ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      transform 320ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform: perspective(var(--perspective)) rotateX(var(--tilt-x, 0deg))
+      rotateY(var(--tilt-y, 0deg)) translate3d(0, 0, 0);
+    will-change: transform;
+  }
+
+  /* The wall the prints hang on. Deliberately almost nothing — a photograph
+     should still be the brightest thing on the page. */
+  .gallery-wall {
+    background:
+      radial-gradient(120% 80% at 50% 0%, var(--color-muted) 0%, transparent 70%);
+  }
+
+  [data-tilt]:hover .print-frame,
+  [data-tilt]:focus-visible .print-frame {
+    box-shadow: var(--shadow-frame-raised);
+  }
+
+  /* Tilt is a pointer affordance. A coarse pointer cannot hover, and motion
+     sensitivity rules it out entirely — in both cases the print sits flat and
+     keeps only its shadow. */
+  @media (prefers-reduced-motion: reduce), (pointer: coarse) {
+    .print-frame {
+      transform: none !important;
+      transition: box-shadow 200ms ease;
+      will-change: auto;
+    }
+  }
+
+  /* Theme switch. Knob position and icon are chosen here, not in React, so the
+     control's markup never depends on client state. Track 48px, knob 24px,
+     2px inset each side → 20px of travel. */
+  .theme-icon-dark {
+    display: none;
+  }
+
+  .theme-switch-knob {
+    transform: translateX(0);
+  }
+
+  :root[data-theme="dark"] .theme-icon-dark {
+    display: block;
+  }
+
+  :root[data-theme="dark"] .theme-icon-light {
+    display: none;
+  }
+
+  :root[data-theme="dark"] .theme-switch-knob {
+    transform: translateX(20px);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .theme-icon-dark {
+      display: block;
+    }
+
+    :root:not([data-theme]) .theme-icon-light {
+      display: none;
+    }
+
+    :root:not([data-theme]) .theme-switch-knob {
+      transform: translateX(20px);
+    }
+  }
+
+  /* Subtle scroll reveal — 350ms / power1.out equivalent, y 12px.
+     Never applied to the hero: the LCP image must not wait on a transition.
+
+     Hidden unconditionally here and forced visible by a <noscript> style block
+     in the layout, so content never depends on an observer having run. The class
+     is deliberately NOT toggled from script: mutating <html> before hydration
+     makes the server and client markup disagree. */
+  .reveal {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+    transition:
+      opacity 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      transform 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .reveal[data-shown="true"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Reduced motion: render every final state immediately, cancel all transitions. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
