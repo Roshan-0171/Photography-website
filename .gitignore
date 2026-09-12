@@ -49,3 +49,4 @@ photos-source/
 
 # Local development database (PGlite). Never deployed.
 .pgdata/
+.neon

@@ -13,6 +13,8 @@ import fs from "node:fs/promises";
 
 const src = await fs.readFile("src/lib/inquiry-store.ts", "utf8");
 const RECENT = /export const RECENT_SQL = `([\s\S]*?)`/.exec(src)[1];
+const SCHEMA = /export const SCHEMA_SQL = `([\s\S]*?)`/.exec(src)[1];
+const statements = SCHEMA.split(";").map((x) => x.trim()).filter(Boolean);
 const LOCAL_DIR = /export const LOCAL_DIR = "([^"]+)"/.exec(src)[1];
 
 const limit = Number(process.argv[2]) || 20;
@@ -20,7 +22,11 @@ const limit = Number(process.argv[2]) || 20;
 /** Reads whichever database the site is actually writing to. */
 async function read() {
   if (process.env.DATABASE_URL) {
-    return neon(process.env.DATABASE_URL).query(RECENT, [limit]);
+    const sql = neon(process.env.DATABASE_URL);
+    // The site creates the table on first use; on a database nothing has
+    // written to yet, this CLI would otherwise be the first thing to touch it.
+    for (const st of statements) await sql.query(st);
+    return sql.query(RECENT, [limit]);
   }
   if (!(await fs.stat(LOCAL_DIR).catch(() => null))) {
     console.error(
@@ -33,6 +39,7 @@ async function read() {
   }
   const { PGlite } = await import("@electric-sql/pglite");
   const db = new PGlite(LOCAL_DIR);
+  for (const st of statements) await db.query(st);
   const res = await db.query(RECENT, [limit]);
   await db.close();
   return res.rows;
