@@ -59,21 +59,39 @@ export const selfPortrait = required("self-portrait");
  * Edit this list to change what appears on the front page.
  */
 /**
- * Twelve pieces, three per category — a fuller wall on the home page than a
- * six-photo sampler, without dumping the whole 24-photo library there and
- * making a visit to /work redundant.
+ * Eighteen pieces for the home page, split evenly by orientation rather than
+ * by category — nine 4:5 portrait-shaped frames, nine 3:2 landscape-shaped
+ * ones, drawn across all four galleries either way. The split matters
+ * structurally: every photograph in this library was sourced at one of
+ * exactly two fixed ratios (see photos.generated.ts), so a group that is
+ * internally uniform in orientation renders as a true aligned grid — same
+ * box size, rows synced across columns — with nothing cropped or padded to
+ * force it, purely because every box in the group already has the same
+ * natural shape. Mixing orientations is what produced the old masonry drift.
  */
-export const curated: Photo[] = [
+export const curatedPortrait: Photo[] = [
   "window-light-sitting",
   "doorway-smile",
-  "field-at-golden-hour",
-  "saree-in-the-forest",
-  "red-suit-magazine",
+  "window-glow",
+  "crimson-gaze",
   "urban-editorial",
   "bride-in-red",
-  "under-the-veil",
-  "first-look",
-  "swayambhu-eyes",
-  "bagmati-ghats",
-  "patan-from-above",
+  "baraat-procession",
+  "patan-archway",
+  "boudha-prayer-flags",
 ].map(required);
+
+export const curatedLandscape: Photo[] = [
+  "field-at-golden-hour",
+  "shadow-study",
+  "hands-and-quiet",
+  "saree-in-the-forest",
+  "tailored-white",
+  "under-the-veil",
+  "garden-vows",
+  "bagmati-ghats",
+  "annapurna-ridge",
+].map(required);
+
+/** Both groups together, for anything that wants the full curated set as one list. */
+export const curated: Photo[] = [...curatedPortrait, ...curatedLandscape];

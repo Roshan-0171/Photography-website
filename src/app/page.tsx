@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import Gallery from "@/components/Gallery";
 import Picture from "@/components/Picture";
 import Reveal from "@/components/Reveal";
-import { curated, hero } from "@/data/photos";
+import { curatedLandscape, curatedPortrait, hero } from "@/data/photos";
 
 export default function HomePage() {
   return (
@@ -15,7 +15,7 @@ export default function HomePage() {
         <Picture photo={hero} fill priority sizes="100vw" />
       </div>
 
-      {/* Curated selection — twelve pieces, three per category. */}
+      {/* Curated selection — eighteen pieces, split by orientation into two ratio-pure grids. */}
       <section
         aria-labelledby="selected-heading"
         className="mx-auto max-w-[90rem] px-6 pb-16 pt-16 sm:px-8"
@@ -33,7 +33,16 @@ export default function HomePage() {
           </Link>
         </Reveal>
 
-        <Gallery photos={curated} label="Selected work" />
+        {/* Two ratio-pure groups, not one mixed grid: every photograph here was
+            sourced at one of exactly two fixed ratios, so a group that is
+            internally one orientation renders as a true aligned grid — same
+            box size, rows synced — with nothing cropped or padded to force it.
+            Mixing orientations in one masonry pass is what produced the drift
+            this replaces. */}
+        <div className="space-y-12 sm:space-y-16">
+          <Gallery photos={curatedPortrait} label="Selected work, portrait-shaped" />
+          <Gallery photos={curatedLandscape} label="Selected work, landscape-shaped" />
+        </div>
       </section>
     </>
   );

@@ -1,7 +1,7 @@
 # Placeholder photographs — delete this file when the real work goes in
 
-The 26 photographs currently in `photos-source/` are **not Rohit Shrestha's
-work.** They are stock images from [Pexels](https://www.pexels.com), chosen to
+The 34 photographs currently in `photos-source/` are **not Rohit Shrestha's
+work.** They are stock images from [Pexels](https://www.pexels.com) and [Unsplash](https://unsplash.com), chosen to
 look like a coherent portfolio — natural-light portraits, editorial fashion,
 weddings, and the valley — so the site can be reviewed with real photographic
 content instead of flat gradients.
@@ -18,15 +18,14 @@ content instead of flat gradients.
 
 ## Licence
 
-Pexels content is free for commercial use with no attribution required, and may
-be modified. What the licence does **not** cover is presenting someone else's
+Both Pexels and Unsplash content are free for commercial use with no attribution required, and may be modified. What the licence does **not** cover is presenting someone else's
 photograph as your own work to win commissions — that is a misrepresentation
 regardless of the licence, and several of these are portraits of identifiable
 people, including brides. Treat them as scaffolding, not content.
 
 ## Provenance
 
-| Slot | Pexels ID | Source |
+| Slot | Source ID | Link |
 |---|---|---|
 | hero/patan-sunset | 36416486 | https://www.pexels.com/photo/36416486/ |
 | about/self-portrait | 14997153 | https://www.pexels.com/photo/14997153/ |
@@ -54,6 +53,14 @@ people, including brides. Treat them as scaffolding, not content.
 | personal/swayambhu-eyes | 37802524 | https://www.pexels.com/photo/37802524/ |
 | personal/bagmati-ghats | 13746894 | https://www.pexels.com/photo/13746894/ |
 | personal/patan-from-above | 38973678 | https://www.pexels.com/photo/38973678/ |
+| portrait/window-glow | Unsplash | https://unsplash.com/photos/1710188091078-e1d92210b9fc |
+| portrait/shadow-study | Unsplash | https://unsplash.com/photos/1730639289147-fc19bab04246 |
+| editorial/crimson-gaze | Unsplash | https://unsplash.com/photos/1727341557146-4abab94d0812 |
+| editorial/tailored-white | Unsplash | https://unsplash.com/photos/1618754580230-dc55ba127aa2 |
+| wedding/baraat-procession | Unsplash | https://unsplash.com/photos/1735052713346-269849580904 |
+| wedding/garden-vows | Unsplash | https://unsplash.com/photos/1753947674135-f7ffb57356e9 |
+| personal/annapurna-ridge | Unsplash | https://unsplash.com/photos/1582466521533-0c6aa82f4be5 |
+| personal/patan-archway | Unsplash | https://unsplash.com/photos/1614679645089-9710d1752cad |
 
 Filenames describe what each stock photograph actually shows, so the titles
 that appear under the frames read sensibly. When your own work goes in, name

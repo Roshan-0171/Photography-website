@@ -35,7 +35,25 @@
     "year": null,
     "featured": false
   },
+  "shadow-study": {
+    "alt": "",
+    "caption": "",
+    "year": null,
+    "featured": false
+  },
+  "window-glow": {
+    "alt": "",
+    "caption": "",
+    "year": null,
+    "featured": false
+  },
   "window-light-sitting": {
+    "alt": "",
+    "caption": "",
+    "year": null,
+    "featured": false
+  },
+  "crimson-gaze": {
     "alt": "",
     "caption": "",
     "year": null,
@@ -71,7 +89,19 @@
     "year": null,
     "featured": false
   },
+  "tailored-white": {
+    "alt": "",
+    "caption": "",
+    "year": null,
+    "featured": false
+  },
   "urban-editorial": {
+    "alt": "",
+    "caption": "",
+    "year": null,
+    "featured": false
+  },
+  "baraat-procession": {
     "alt": "",
     "caption": "",
     "year": null,
@@ -101,6 +131,12 @@
     "year": null,
     "featured": false
   },
+  "garden-vows": {
+    "alt": "",
+    "caption": "",
+    "year": null,
+    "featured": false
+  },
   "the-dress-waiting": {
     "alt": "",
     "caption": "",
@@ -108,6 +144,12 @@
     "featured": false
   },
   "under-the-veil": {
+    "alt": "",
+    "caption": "",
+    "year": null,
+    "featured": false
+  },
+  "annapurna-ridge": {
     "alt": "",
     "caption": "",
     "year": null,
@@ -126,6 +168,12 @@
     "featured": false
   },
   "boudha-prayer-flags": {
+    "alt": "",
+    "caption": "",
+    "year": null,
+    "featured": false
+  },
+  "patan-archway": {
     "alt": "",
     "caption": "",
     "year": null,
