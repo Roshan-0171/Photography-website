@@ -33,7 +33,7 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
   }
 
   await createSession();
-  redirect("/admin");
+  redirect("/admin/enquiries");
 }
 
 export async function signOut(): Promise<void> {

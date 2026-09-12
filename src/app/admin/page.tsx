@@ -1,140 +1,25 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { CircleAlert, LogOut, Mail } from "lucide-react";
+import { redirect } from "next/navigation";
 
 import AdminLogin from "@/components/AdminLogin";
-import { isEnabled, isSignedIn } from "@/lib/admin-auth";
-import { isConfigured, recentInquiries } from "@/lib/inquiry-store";
-import { signOut } from "./actions";
+import { isSignedIn } from "@/lib/admin-auth";
 
-export const metadata: Metadata = {
-  title: "Enquiries",
-  // Belt and braces alongside the Disallow in robots.ts: a page listing other
-  // people's contact details must never appear in a search index.
-  robots: { index: false, follow: false, nocache: true, googleBot: { index: false, follow: false } },
-};
+export const metadata: Metadata = { title: "Sign in" };
 
-/** Never prerendered, never cached: it is per-session and it is private. */
-export const dynamic = "force-dynamic";
-
-const fmt = (iso: string) =>
-  new Date(iso).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
-
-const when = (row: { flexible: boolean; preferred_date: string | null }) =>
-  row.flexible
-    ? "Flexible"
-    : row.preferred_date
-      ? new Date(row.preferred_date).toLocaleDateString("en-GB", { dateStyle: "medium" })
-      : "No date given";
-
-export default async function AdminPage() {
-  // With no password configured there is no login form to probe and no hint
-  // that anything lives here at all.
-  if (!isEnabled()) notFound();
-
-  if (!(await isSignedIn())) {
-    return (
-      <div className="mx-auto max-w-[90rem] px-6 py-24 sm:px-8">
-        <h1 className="text-3xl sm:text-4xl">Enquiries</h1>
-        <p className="mt-4 max-w-prose text-muted-fg">
-          This page lists people&rsquo;s contact details. Sign in to see it.
-        </p>
-        <div className="mt-12">
-          <AdminLogin />
-        </div>
-      </div>
-    );
-  }
-
-  // Only reached once authenticated — nothing is read from the database before
-  // this point, so an unauthenticated response cannot contain enquiry data.
-  const rows = isConfigured() ? await recentInquiries(100) : [];
+/** The sign-in portal. Already signed in? Straight through to the list. */
+export default async function AdminSignInPage() {
+  if (await isSignedIn()) redirect("/admin/enquiries");
 
   return (
-    <div className="mx-auto max-w-[90rem] px-6 py-16 sm:px-8">
-      <div className="flex flex-wrap items-baseline justify-between gap-6">
-        <div>
-          <h1 className="text-3xl sm:text-4xl">Enquiries</h1>
-          <p className="mt-2 text-sm text-muted-fg">
-            {rows.length === 0
-              ? "Nothing yet."
-              : `${rows.length} most recent, newest first.`}
-          </p>
-        </div>
-        <form action={signOut}>
-          <button
-            type="submit"
-            className="inline-flex min-h-11 cursor-pointer items-center gap-2 border border-line px-5 text-sm transition-colors duration-200 hover:bg-muted"
-          >
-            <LogOut className="size-4" aria-hidden="true" />
-            Sign out
-          </button>
-        </form>
+    <div className="mx-auto max-w-[90rem] px-6 py-24 sm:px-8">
+      <h1 className="text-3xl sm:text-4xl">Sign in</h1>
+      <p className="mt-4 max-w-prose text-muted-fg">
+        The enquiries list holds people&rsquo;s contact details. It is only
+        available to you.
+      </p>
+      <div className="mt-12">
+        <AdminLogin />
       </div>
-
-      {!isConfigured() && (
-        <p className="mt-12 flex max-w-prose items-start gap-2 border border-destructive p-6 text-sm">
-          <CircleAlert className="mt-0.5 size-5 shrink-0 text-destructive" aria-hidden="true" />
-          <span>
-            No database is configured, so nothing is being stored and there is
-            nothing to show here. Set <code>DATABASE_URL</code> — until then the
-            notification email is the only record of an enquiry.
-          </span>
-        </p>
-      )}
-
-      {/* Cards rather than a table: this is meant to be read on a phone, and a
-          ten-column table is unreadable at 375px however it is styled. */}
-      <ul className="mt-12 space-y-8">
-        {rows.map((row) => (
-          <li key={row.id} className="border border-line p-6">
-            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-              <h2 className="text-lg">{row.name}</h2>
-              <p className="text-xs tabular-nums text-muted-fg">
-                #{row.id} · {fmt(row.created_at)}
-              </p>
-            </div>
-
-            <dl className="mt-4 grid gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
-              <div className="flex min-w-0 gap-2">
-                <dt className="shrink-0 text-muted-fg">Email</dt>
-                <dd className="min-w-0 [overflow-wrap:anywhere]">
-                  <a
-                    href={`mailto:${row.email}?subject=${encodeURIComponent("Re: your enquiry")}`}
-                    className="underline underline-offset-4"
-                  >
-                    {row.email}
-                  </a>
-                </dd>
-              </div>
-              <div className="flex gap-2">
-                <dt className="shrink-0 text-muted-fg">Shoot</dt>
-                <dd>{row.shoot_type}</dd>
-              </div>
-              <div className="flex gap-2">
-                <dt className="shrink-0 text-muted-fg">Date</dt>
-                <dd>{when(row)}</dd>
-              </div>
-              <div className="flex gap-2">
-                <dt className="shrink-0 text-muted-fg">Budget</dt>
-                <dd>{row.budget}</dd>
-              </div>
-            </dl>
-
-            <p className="mt-4 max-w-prose whitespace-pre-wrap text-secondary">
-              {row.message}
-            </p>
-
-            {/* The enquiries that need you: stored, but you were never emailed. */}
-            {!row.notified && (
-              <p className="mt-4 flex items-center gap-2 text-sm text-destructive">
-                <Mail className="size-4 shrink-0" aria-hidden="true" />
-                The notification email for this enquiry never sent.
-              </p>
-            )}
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }

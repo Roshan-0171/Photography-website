@@ -140,9 +140,13 @@ unchanged. The stored row records whether each email actually went out, and
 
 ## Reading enquiries from your phone
 
-`/admin` lists stored enquiries behind a password. It is off by default: with
-no `ADMIN_PASSWORD` set the route returns 404, so there is no login form to
-probe and no hint that anything lives there.
+Sign in at `/admin`; the list is at `/admin/enquiries`. Off by default: with no
+`ADMIN_PASSWORD` set, both routes are 404s — no login form to probe, no hint
+that anything lives there.
+
+Signed out, `/admin/enquiries` is also a 404 rather than a redirect to the
+sign-in page. A redirect would confirm to anyone probing that something is
+there; a 404 looks exactly like a page that does not exist.
 
 ```bash
 openssl rand -base64 24    # generate a password; paste it into .env.local
