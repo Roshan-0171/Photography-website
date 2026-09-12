@@ -58,11 +58,22 @@ export const selfPortrait = required("self-portrait");
  * Curated home selection — six pieces, deliberately mixed across categories.
  * Edit this list to change what appears on the front page.
  */
+/**
+ * Twelve pieces, three per category — a fuller wall on the home page than a
+ * six-photo sampler, without dumping the whole 24-photo library there and
+ * making a visit to /work redundant.
+ */
 export const curated: Photo[] = [
   "window-light-sitting",
-  "bride-in-red",
-  "saree-in-the-forest",
-  "swayambhu-eyes",
   "doorway-smile",
+  "field-at-golden-hour",
+  "saree-in-the-forest",
+  "red-suit-magazine",
+  "urban-editorial",
+  "bride-in-red",
   "under-the-veil",
+  "first-look",
+  "swayambhu-eyes",
+  "bagmati-ghats",
+  "patan-from-above",
 ].map(required);

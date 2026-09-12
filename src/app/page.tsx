@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import Gallery from "@/components/Gallery";
-import PackagesPreview from "@/components/PackagesPreview";
 import Picture from "@/components/Picture";
 import TypeIndex from "@/components/TypeIndex";
 import Reveal from "@/components/Reveal";
@@ -67,10 +66,6 @@ export default function HomePage() {
 
         <Gallery photos={curated} label="Selected work" />
       </section>
-
-      <div className="mx-auto max-w-[90rem] px-6 pb-16 sm:px-8">
-        <PackagesPreview />
-      </div>
     </>
   );
 }
