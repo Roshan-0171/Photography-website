@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Photography portfolio — Kathmandu
 
-## Getting Started
-
-First, run the development server:
+Next.js (App Router) + Tailwind v4. Light chrome, dark lightbox, no component library.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev          # http://localhost:3000
+npm run build
+npm run lint
+npm run photos       # rebuild image derivatives from photos-source/
+npm run photos:force # ignore the cache and rebuild every photograph
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Copy `.env.example` to `.env.local` and fill it in before the contact form will
+send anything.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Design system
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`design-system/kathmandu-photographer/MASTER.md` is the source of truth, generated
+by the ui-ux-pro-max skill. Read its **Approved overrides** section first — it
+records where the project deliberately departs from the generated output and why.
 
-## Learn More
+Tokens live in [globals.css](src/app/globals.css) under `@theme`. Do not add
+`--spacing-<t-shirt-size>` tokens: in Tailwind v4 that namespace also defines
+`max-w-*`, so `--spacing-3xl` silently turns `max-w-3xl` into 6rem.
 
-To learn more about Next.js, take a look at the following resources:
+## Photographs
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+> The photographs currently in `photos-source/` are **Pexels stock, not the
+> photographer's own work.** See [PLACEHOLDER-PHOTOS.md](PLACEHOLDER-PHOTOS.md)
+> for provenance and the checklist to follow before launch.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+photos-source/            ← originals. gitignored, never deployed, never served
+  hero/                     the one full-bleed banner image
+  about/                    the portrait of you on /story
+  portrait/  editorial/  personal/     the three galleries
+        │
+        │  npm run photos
+        ▼
+public/photos/<category>/<name>-<width>.{avif,webp,jpg}   ← committed
+src/data/photos.generated.ts                              ← committed, DO NOT EDIT
+src/data/photo-text.json                                  ← committed, YOU edit this
+```
 
-## Deploy on Vercel
+### Adding photographs
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Drop files into the right `photos-source/<category>/` folder. Any name you
+   like — `Kiran on the roof.JPG` becomes the id `kiran-on-the-roof`. Prefix with
+   numbers (`01-`, `02-`) if you want to control the order.
+2. Run `npm run photos`.
+3. Write the alt text. The script adds a blank entry per photograph to
+   [src/data/photo-text.json](src/data/photo-text.json); fill in `alt` and,
+   optionally, `caption`. Your words live in that file alone and survive every
+   rebuild — the generated file is overwritten each run and must never be edited.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deleting an original and re-running removes its derivatives too, so `/public`
+cannot drift out of step.
+
+### What the script guarantees
+
+- **All metadata is stripped** from every derivative — GPS coordinates, camera
+  serial numbers, timestamps. It is verified on the written bytes and the build
+  stops if anything survives. This is a privacy requirement, not a file-size one.
+- **Nothing full-resolution is published.** Derivatives cap at 2000px wide
+  (`MAX_WIDTH` in the script). Originals stay in the gitignored source folder.
+- **Idempotent.** Each original is fingerprinted; unchanged files are skipped.
+- **Dimensions are read from the file**, never typed by hand, so the reserved
+  layout space always matches the real photograph and nothing shifts on load.
+
+### Alt text is not optional
+
+Every photograph starts with empty alt text and the script says so loudly. Empty
+alt means the photograph does not exist for anyone using a screen reader, and
+does not exist to image search either.
+
+Set `PHOTOS_REQUIRE_ALT=1` to turn the warning into a hard failure — do this in
+CI so a photograph can never be published without it.
+
+### Layout rules the code keeps
+
+Galleries never centre-crop: each frame keeps its own aspect ratio, because the
+composition is the work. The **only** cropped image on the site is the home hero,
+which is a full-bleed banner — remove `fill` from the `<Picture>` in
+[src/app/page.tsx](src/app/page.tsx) to show it whole instead.
+
+The hero is the LCP element: preloaded, high fetch priority, never lazy. Keep it
+that way.
+
+## The enquiry form
+
+Copy `.env.example` to `.env.local` and fill it in — see that file for what each
+variable does.
+
+**Email copy lives in one file:** [src/data/emails.ts](src/data/emails.ts). Both
+the notification to you and the confirmation to the enquirer are plain prose at
+the top of that file, with a comment explaining the `${placeholders}`. Nothing
+else needs touching to rewrite them.
+
+Preview your changes without spending sends:
+
+```bash
+INQUIRY_DRY_RUN=1 npm run dev     # prints both emails to the terminal
+```
+
+## Still placeholder
+
+Copy on Story and Services is written to the right shape and length but is not
+true. The "Commissioned by" list uses generic descriptors ("A national daily")
+rather than invented client names — replace with real ones before launch.
+
+Names, contact details and the studio address are in
+[src/data/site.ts](src/data/site.ts) — one edit propagates site-wide.
