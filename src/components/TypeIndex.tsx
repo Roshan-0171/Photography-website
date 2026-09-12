@@ -10,11 +10,10 @@ import { byCategory, categories } from "@/data/photos";
  */
 export default function TypeIndex() {
   return (
+    // The nav's aria-label carries the accessible name; no visible heading
+    // duplicates it — a screen reader still announces "Browse by type, navigation".
     <nav aria-label="Browse by type" className="border-y border-line py-4">
-      <h2 className="text-xs uppercase tracking-[0.14em] text-muted-fg">
-        Browse by type
-      </h2>
-      <ul className="mt-3 flex flex-wrap gap-x-8 gap-y-2">
+      <ul className="flex flex-wrap gap-x-8 gap-y-2">
         {categories.map((c) => (
           <li key={c.id}>
             <Link
