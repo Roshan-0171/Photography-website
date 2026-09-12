@@ -83,6 +83,14 @@ export default function InquiryForm({ defaultShootType = "" }: { defaultShootTyp
   // Move focus to whichever outcome the submit produced, so a keyboard or
   // screen-reader user is never left guessing whether anything happened.
   useEffect(() => {
+    // Record the conversion once, when the enquiry is confirmed sent. No-ops
+    // when analytics is not configured.
+    if (state.status === "success") {
+      (window as unknown as { plausible?: (e: string) => void }).plausible?.(
+        "Enquiry sent",
+      );
+    }
+
     if (state.status === "error") summaryRef.current?.focus();
     if (state.status === "failed") failedRef.current?.focus();
     if (state.status === "success") successRef.current?.focus();
