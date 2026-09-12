@@ -3,7 +3,6 @@ import { ArrowRight } from "lucide-react";
 
 import Gallery from "@/components/Gallery";
 import Picture from "@/components/Picture";
-import TypeIndex from "@/components/TypeIndex";
 import Reveal from "@/components/Reveal";
 import { curated, hero } from "@/data/photos";
 import { site } from "@/data/site";
@@ -42,11 +41,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      <div className="mx-auto mt-16 max-w-[90rem] px-6 sm:px-8">
-        <TypeIndex />
-      </div>
-
-      {/* Curated selection — six pieces, mixed across categories. */}
+      {/* Curated selection — twelve pieces, three per category. */}
       <section
         aria-labelledby="selected-heading"
         className="mx-auto max-w-[90rem] px-6 pb-16 pt-16 sm:px-8"
