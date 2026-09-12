@@ -175,14 +175,26 @@ export async function submitInquiry(
     });
     notified = true;
   } catch (error) {
-    // Full payload at error level. If there is no stored row either, the logs
-    // are the only remaining copy of this enquiry.
-    console.error(
-      rowId
-        ? `[inquiry] notification email failed, but the enquiry IS stored as row ${rowId}.`
-        : "[inquiry] NOTIFICATION SEND FAILED and nothing was stored — enquiry NOT delivered. Full payload follows so it can be recovered.",
-      { ip, values, error },
-    );
+    /**
+     * The payload is written to the log ONLY when there is no stored row — in
+     * that case the log is the last copy of the enquiry and losing it loses a
+     * booking. When the row exists the row is the record, so the log carries an
+     * id instead: personal data should not sit in runtime logs, which are read
+     * by anyone with access to the hosting project.
+     */
+    if (rowId) {
+      console.error(
+        `[inquiry] notification email failed. The enquiry IS stored as row ${rowId} — ` +
+          `read it with \`npm run inquiries\`.`,
+        { ip, error },
+      );
+    } else {
+      console.error(
+        "[inquiry] NOTIFICATION SEND FAILED and nothing was stored — enquiry NOT " +
+          "delivered. Full payload follows because this log is now its only copy.",
+        { ip, values, error },
+      );
+    }
   }
 
   if (!notified && rowId === null) {

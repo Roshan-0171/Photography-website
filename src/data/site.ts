@@ -20,7 +20,7 @@ export const site = {
   // PLACEHOLDER — must be a mailbox you actually read. It is published in the
   // footer, on /contact, in the JSON-LD, and it is what a visitor is told to
   // write to when an enquiry fails to send.
-  email: "hello@rohitshrestha.photo",
+  email: "roshan.star180@gmail.com",
 
   // PLACEHOLDER — a real, reachable number.
   phone: "+977 9800 000 000",
