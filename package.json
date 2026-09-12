@@ -9,9 +9,12 @@
     "lint": "eslint",
     "photos": "node scripts/build-photos.mjs && node scripts/build-og.mjs",
     "photos:force": "node scripts/build-photos.mjs --force",
-    "og": "node scripts/build-og.mjs"
+    "og": "node scripts/build-og.mjs",
+    "inquiries": "node --env-file-if-exists=.env.local scripts/inquiries.mjs",
+    "test:db": "node scripts/test-db.mjs"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
     "lucide-react": "^1.45.0",
     "next": "16.3.5",
     "react": "19.2.8",
@@ -19,6 +22,7 @@
     "resend": "^6.28.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

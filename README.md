@@ -102,6 +102,28 @@ Preview your changes without spending sends:
 INQUIRY_DRY_RUN=1 npm run dev     # prints both emails to the terminal
 ```
 
+## Storing enquiries
+
+Optional. Without `DATABASE_URL` the notification email is the only record of an
+enquiry — delete it and it is gone. Set one and every enquiry is also written to
+Postgres, so a deleted email or a Resend outage no longer loses a booking.
+
+```bash
+npm run inquiries        # the 20 most recent
+npm run inquiries -- 50
+npm run test:db          # runs the schema and queries against real Postgres
+```
+
+Free database at [neon.tech](https://neon.tech); paste the pooled connection
+string into `.env.local`. The table is created on first use.
+
+**What this changes:** an enquiry now survives if *either* the database row or
+the notification email lands, rather than the email alone. Only losing both is a
+failure — losing a booking to a mail outage when the enquiry is sitting safely in
+Postgres would be absurd. With no `DATABASE_URL` the old behaviour applies
+unchanged. The stored row records whether each email actually went out, and
+`npm run inquiries` flags any enquiry you were never emailed about.
+
 ## Still placeholder
 
 Copy on Story and Services is written to the right shape and length but is not

@@ -17,6 +17,7 @@ import {
   type InquiryValues,
 } from "@/data/emails";
 import { clientKey, rateLimit } from "@/lib/rate-limit";
+import { isConfigured as storeConfigured, markSent, saveInquiry } from "@/lib/inquiry-store";
 import { site } from "@/data/site";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -145,9 +146,25 @@ export async function submitInquiry(
     return { status: "error", errors, values };
   }
 
-  // The notification IS the enquiry. If it does not go out, the enquiry did not
-  // happen, and the visitor must be told so rather than shown a thank-you.
+  /**
+   * An enquiry survives if EITHER the database row or the notification email
+   * lands. Both are attempted; only losing both is a real failure.
+   *
+   * This widens the original rule, which treated the notification email as the
+   * enquiry outright. That was correct when the inbox was the only record — it
+   * is needlessly strict now that a row in Postgres is just as durable, and it
+   * would turn a Resend outage into a lost booking. With no DATABASE_URL set,
+   * `saveInquiry` returns null and the old behaviour applies unchanged.
+   */
+  let rowId: number | null = null;
+  try {
+    rowId = await saveInquiry(values, ip);
+  } catch (error) {
+    console.error("[inquiry] database write failed", { ip, error });
+  }
+
   const notification = notificationEmail(values);
+  let notified = false;
   try {
     await send({
       kind: "notification",
@@ -156,13 +173,22 @@ export async function submitInquiry(
       subject: notification.subject,
       body: notification.body,
     });
+    notified = true;
   } catch (error) {
-    // Full payload at error level: if the email is gone, the logs are the only
-    // remaining copy of this enquiry.
+    // Full payload at error level. If there is no stored row either, the logs
+    // are the only remaining copy of this enquiry.
     console.error(
-      "[inquiry] NOTIFICATION SEND FAILED — enquiry NOT delivered. Full payload follows so it can be recovered.",
+      rowId
+        ? `[inquiry] notification email failed, but the enquiry IS stored as row ${rowId}.`
+        : "[inquiry] NOTIFICATION SEND FAILED and nothing was stored — enquiry NOT delivered. Full payload follows so it can be recovered.",
       { ip, values, error },
     );
+  }
+
+  if (!notified && rowId === null) {
+    if (storeConfigured()) {
+      console.error("[inquiry] both the database write and the email failed", { ip });
+    }
     return {
       status: "failed",
       errors: {},
@@ -174,6 +200,7 @@ export async function submitInquiry(
   // The confirmation is a courtesy. Its failure does not undo the enquiry, so
   // the visitor is not punished for it — it is logged and we carry on.
   const confirmation = confirmationEmail(values);
+  let confirmed = true;
   try {
     await send({
       kind: "confirmation",
@@ -182,10 +209,21 @@ export async function submitInquiry(
       body: confirmation.body,
     });
   } catch (error) {
+    confirmed = false;
     console.warn(
       "[inquiry] confirmation email failed — the enquiry itself WAS delivered",
       { to: values.email, error },
     );
+  }
+
+  // Record what actually went out, so a stored enquiry says whether you were
+  // ever told about it. Never allowed to affect the visitor's reply.
+  if (rowId !== null) {
+    try {
+      await markSent(rowId, notified, confirmed);
+    } catch (error) {
+      console.warn("[inquiry] could not record send status", { rowId, error });
+    }
   }
 
   return { status: "success", errors: {}, values: {} };
