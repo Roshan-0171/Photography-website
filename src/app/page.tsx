@@ -2,7 +2,9 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import Gallery from "@/components/Gallery";
+import PackagesPreview from "@/components/PackagesPreview";
 import PreviewIndex from "@/components/PreviewIndex";
+import Stats from "@/components/Stats";
 import TypeIndex from "@/components/TypeIndex";
 import Reveal from "@/components/Reveal";
 import { curated, hero } from "@/data/photos";
@@ -57,6 +59,10 @@ export default function HomePage() {
       </PreviewIndex>
 
       <div className="mx-auto mt-16 max-w-[90rem] px-6 sm:px-8">
+        <Stats />
+      </div>
+
+      <div className="mx-auto mt-16 max-w-[90rem] px-6 sm:px-8">
         <TypeIndex />
       </div>
 
@@ -80,6 +86,10 @@ export default function HomePage() {
 
         <Gallery photos={curated} label="Selected work" />
       </section>
+
+      <div className="mx-auto max-w-[90rem] px-6 pb-16 sm:px-8">
+        <PackagesPreview />
+      </div>
 
       {/* Single closing CTA. One primary action per page. */}
       <section className="border-y border-line bg-muted/50">

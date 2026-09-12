@@ -4,6 +4,7 @@ import { ArrowRight, Check } from "lucide-react";
 
 import Reveal from "@/components/Reveal";
 import { faq } from "@/data/faq";
+import { packages } from "@/data/packages";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -11,54 +12,6 @@ export const metadata: Metadata = {
     "Portrait, family and editorial photography packages in Kathmandu, with prices listed in full.",
 };
 
-const packages = [
-  {
-    name: "Portrait sitting",
-    price: "NPR 18,000",
-    unit: "one person",
-    summary:
-      "For one person who needs a picture that actually looks like them — a profile, a book jacket, a birthday, no reason at all.",
-    includes: [
-      "2–3 hours, one location of your choosing",
-      "Pre-shoot call to talk through wardrobe and light",
-      "A gallery of 40–60 frames within 10 days",
-      "12 finished images, retouched and colour-graded",
-      "Full-resolution files plus web-sized versions",
-      "Personal print licence, unlimited",
-    ],
-  },
-  {
-    name: "Family & group",
-    price: "NPR 32,000",
-    unit: "up to 8 people",
-    summary:
-      "Two or more people in one frame, at home or somewhere that matters to you. Children, grandparents and reluctant teenagers all welcome.",
-    includes: [
-      "3 hours, up to two locations in the valley",
-      "Everything in the portrait sitting",
-      "25 finished images, retouched and colour-graded",
-      "Individual portraits of each person included",
-      "One 12×16in archival print of your chosen frame",
-      "Additional people: NPR 2,500 each",
-    ],
-    featured: true,
-  },
-  {
-    name: "Editorial & commercial",
-    price: "NPR 55,000",
-    unit: "per shoot day",
-    summary:
-      "Commissioned work for magazines, hospitality and brands. Half-day assignments are NPR 32,000; multi-day rates are lower per day.",
-    includes: [
-      "Full shoot day, up to 9 hours on location",
-      "Concept call and shot list agreed in advance",
-      "Assistant and lighting kit when the brief needs them",
-      "Selects delivered within 48 hours, full edit in 7 days",
-      "30+ finished images, retouched to spec",
-      "12-month commercial licence (extensions quoted)",
-    ],
-  },
-];
 
 const notes = [
   ["Travel", "Free inside Ring Road. NPR 4,000 elsewhere in the valley; outside the valley quoted with transport and lodging at cost."],
@@ -81,14 +34,23 @@ export default function ServicesPage() {
 
       <div className="mt-16 grid gap-8 lg:grid-cols-3">
         {packages.map((pkg, i) => (
+          <div
+            key={pkg.name}
+            id={pkg.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}
+            className="h-full scroll-mt-28"
+          >
           <Reveal
             as="section"
-            key={pkg.name}
             delay={i * 70}
-            className={`flex min-w-0 flex-col border p-6 sm:p-8 ${
+            className={`relative flex h-full min-w-0 flex-col border p-6 sm:p-8 ${
               pkg.featured ? "border-fg" : "border-line"
             }`}
           >
+            {pkg.featured && (
+              <span className="absolute -top-3 left-6 bg-fg px-3 py-1 text-xs uppercase tracking-[0.12em] text-bg">
+                Most booked
+              </span>
+            )}
             <h2 className="text-xl">{pkg.name}</h2>
             <p className="mt-6">
               <span className="font-display text-3xl tracking-tight">
@@ -125,6 +87,7 @@ export default function ServicesPage() {
               <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
           </Reveal>
+          </div>
         ))}
       </div>
 
