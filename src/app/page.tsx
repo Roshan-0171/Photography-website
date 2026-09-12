@@ -5,7 +5,6 @@ import Gallery from "@/components/Gallery";
 import Picture from "@/components/Picture";
 import Reveal from "@/components/Reveal";
 import { curated, hero } from "@/data/photos";
-import { site } from "@/data/site";
 
 export default function HomePage() {
   return (
@@ -14,31 +13,6 @@ export default function HomePage() {
           animation to wait on. */}
       <div className="relative h-[clamp(22rem,66vh,48rem)] w-full overflow-hidden bg-muted">
         <Picture photo={hero} fill priority sizes="100vw" />
-      </div>
-
-      <div className="mx-auto max-w-[90rem] px-6 py-12 sm:px-8 sm:py-16">
-        <div className="max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-fg">
-            {site.role} · {site.city}
-          </p>
-          <h1 className="mt-6 text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
-            {site.tagline}
-          </h1>
-          <p className="mt-6 max-w-xl text-lg text-muted-fg">
-            Ten years photographing people across the Kathmandu Valley — for
-            magazines, for brands, and for families who wanted one honest
-            picture of themselves.
-          </p>
-          <div className="mt-12 flex flex-wrap items-center gap-6">
-            <Link
-              href="/contact"
-              className="inline-flex cursor-pointer items-center gap-2 bg-fg px-7 py-3.5 text-base text-bg transition-colors duration-200 hover:bg-secondary active:bg-secondary"
-            >
-              Book a shoot
-              <ArrowRight className="size-4" aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
       </div>
 
       {/* Curated selection — twelve pieces, three per category. */}
