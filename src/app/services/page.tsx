@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ArrowRight, Check } from "lucide-react";
 
 import Reveal from "@/components/Reveal";
+import { faq } from "@/data/faq";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -126,6 +127,40 @@ export default function ServicesPage() {
           </Reveal>
         ))}
       </div>
+
+      <section
+        aria-labelledby="faq-heading"
+        className="mt-24 border-t border-line pt-16"
+      >
+        <h2 id="faq-heading" className="text-2xl sm:text-3xl">
+          Questions people ask
+        </h2>
+        {/* Plain markup rather than an accordion: every answer is short, and a
+            question worth answering is not worth hiding behind a click. */}
+        <dl className="mt-12 grid gap-8 md:grid-cols-2 md:gap-x-16">
+          {faq.map((item) => (
+            <div key={item.q} className="min-w-0">
+              <dt className="text-base font-medium text-fg">{item.q}</dt>
+              <dd className="mt-2 max-w-prose text-muted-fg">{item.a}</dd>
+            </div>
+          ))}
+        </dl>
+        <script
+          type="application/ld+json"
+          // Static, author-written content — no user input reaches this string.
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: faq.map((item) => ({
+                "@type": "Question",
+                name: item.q,
+                acceptedAnswer: { "@type": "Answer", text: item.a },
+              })),
+            }),
+          }}
+        />
+      </section>
 
       <section
         aria-labelledby="notes-heading"

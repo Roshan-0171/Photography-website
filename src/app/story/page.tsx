@@ -5,6 +5,7 @@ import { ArrowRight, Camera, Clock, Handshake } from "lucide-react";
 import Picture from "@/components/Picture";
 import Reveal from "@/components/Reveal";
 import { selfPortrait } from "@/data/photos";
+import { testimonials } from "@/data/testimonials";
 import { site } from "@/data/site";
 
 export const metadata: Metadata = {
@@ -90,6 +91,33 @@ export default function StoryPage() {
           ))}
         </ul>
       </section>
+
+      {/* Appears only once there are real testimonials to show. The page reads
+          correctly with none, so nothing invented has to stand in meanwhile. */}
+      {testimonials.length > 0 && (
+        <section
+          aria-labelledby="said-heading"
+          className="mt-24 border-t border-line pt-16"
+        >
+          <h2
+            id="said-heading"
+            className="text-xs uppercase tracking-[0.14em] text-muted-fg"
+          >
+            What people say
+          </h2>
+          <ul className="mt-8 grid gap-12 md:grid-cols-3">
+            {testimonials.map((t) => (
+              <li key={t.name} className="min-w-0">
+                <blockquote className="text-lg leading-relaxed text-secondary">
+                  &ldquo;{t.quote}&rdquo;
+                </blockquote>
+                <p className="mt-4 text-sm text-fg">{t.name}</p>
+                <p className="text-sm text-muted-fg">{t.context}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section
         aria-labelledby="clients-heading"
