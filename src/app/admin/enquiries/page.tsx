@@ -43,17 +43,25 @@ export default async function EnquiriesPage({ searchParams }: PageProps<"/admin/
   if (!(await isSignedIn())) notFound();
 
   const params = await searchParams;
-  const rawStatus = Array.isArray(params.status) ? params.status[0] : params.status;
-  const status: Status | null = isStatus(rawStatus) ? rawStatus : rawStatus === "all" ? null : "new";
-  const tab = status ?? "all";
   const q = (Array.isArray(params.q) ? params.q[0] : params.q)?.trim() || "";
+  const rawStatus = Array.isArray(params.status) ? params.status[0] : params.status;
+
+  // A search looks across every status. Scoping it to the current tab meant
+  // searching for a name you knew existed and getting nothing, because it had
+  // been marked replied or archived — indistinguishable from search being
+  // broken. Tabs are for browsing; a query overrides them.
+  const status: Status | null = q
+    ? null
+    : isStatus(rawStatus) ? rawStatus : rawStatus === "all" ? null : "new";
+  const tab = q ? "all" : (status ?? "all");
 
   // Only reached once authenticated. Nothing is read before this line.
   const [rows, counts] = isConfigured()
     ? await Promise.all([listInquiries({ status, q: q || null }), countInquiries()])
     : [[], { new: 0, replied: 0, archived: 0, week: 0, all: 0 }];
 
-  const href = (t: Status | "all") => `/admin/enquiries?status=${t}${q ? `&q=${encodeURIComponent(q)}` : ""}`;
+  // Tab links clear the search: picking a tab means "browse this", not "narrow this".
+  const href = (t: Status | "all") => `/admin/enquiries?status=${t}`;
 
   return (
     <div className="mx-auto max-w-[90rem] px-6 py-16 sm:px-8">
@@ -118,14 +126,13 @@ export default async function EnquiriesPage({ searchParams }: PageProps<"/admin/
           </ul>
         </nav>
         <form method="get" className="flex min-w-0 gap-2">
-          <input type="hidden" name="status" value={tab} />
-          <label htmlFor="q" className="sr-only">Search by name or email</label>
+          <label htmlFor="q" className="sr-only">Search all enquiries by name or email</label>
           <input
             id="q"
             name="q"
             type="search"
             defaultValue={q}
-            placeholder="Name or email"
+            placeholder="Search all by name or email"
             className="min-h-11 w-48 min-w-0 border border-field bg-bg px-3 text-sm sm:w-64"
           />
           <button type="submit" className={BTN} aria-label="Search">
@@ -134,9 +141,20 @@ export default async function EnquiriesPage({ searchParams }: PageProps<"/admin/
         </form>
       </div>
 
+      {q && rows.length > 0 && (
+        <p className="mt-8 text-sm text-muted-fg">
+          {rows.length} {rows.length === 1 ? "match" : "matches"} for &ldquo;{q}&rdquo; across
+          every status.{" "}
+          <Link href="/admin/enquiries" className="underline underline-offset-4">Clear</Link>
+        </p>
+      )}
+
       {rows.length === 0 && (
         <p className="mt-12 text-muted-fg">
-          {q ? `Nothing matches “${q}”.` : tab === "new" ? "Nothing awaiting a reply." : "Nothing here."}
+          {q ? (
+            <>Nothing matches &ldquo;{q}&rdquo; in any status.{" "}
+              <Link href="/admin/enquiries" className="underline underline-offset-4">Clear</Link></>
+          ) : tab === "new" ? "Nothing awaiting a reply." : "Nothing here."}
         </p>
       )}
 
