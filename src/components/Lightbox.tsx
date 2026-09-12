@@ -56,31 +56,42 @@ export default function Lightbox({ photos, index, onClose, onIndexChange }: Prop
     const hash = `#photo-${photos[index]?.id ?? ""}`;
     if (!pushedRef.current) {
       const cameFromLink = window.location.hash === hash;
-      if (!cameFromLink) {
-        window.history.pushState({ lightbox: true }, "", hash);
-        pushedRef.current = true;
-      }
+      if (!cameFromLink) window.history.pushState({ lightbox: true }, "", hash);
+      pushedRef.current = true;
     } else {
       window.history.replaceState({ lightbox: true }, "", hash);
     }
   }, [index, photos]);
 
   useEffect(() => {
-    const onPop = () => {
-      pushedRef.current = false;
-      onClose();
-    };
+    const onPop = () => onClose();
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
   }, [onClose]);
 
-  // Strip the photograph from the URL on the way out.
+  /**
+   * Strip the photograph from the URL on the way out — closing via the X
+   * button, Escape or the backdrop, as opposed to the browser's own back
+   * button, which the effect above already handles.
+   *
+   * This used to call `history.back()` to pop the entry pushed on open. That
+   * is asynchronous: the real navigation, and the popstate event it fires,
+   * land on a later tick. Under React's development-only StrictMode, effects
+   * are invoked, cleaned up and re-invoked once immediately on mount to
+   * surface exactly this kind of bug — so this cleanup fired for real,
+   * scheduled the async back-navigation, and by the time it actually landed a
+   * moment later a freshly re-added popstate listener from the "remount" was
+   * there to catch it and close the lightbox that had only just reopened. It
+   * only ever showed up in `next dev`, never in a production build, which is
+   * why it went unnoticed until someone hit it in normal day-to-day use.
+   *
+   * `replaceState` sidesteps the race entirely: it mutates the URL
+   * synchronously and fires no event of any kind, so there is nothing for any
+   * popstate listener — ours or a doubled-up one — to react to.
+   */
   useEffect(
     () => () => {
-      if (pushedRef.current) {
-        pushedRef.current = false;
-        window.history.back();
-      } else if (window.location.hash.startsWith("#photo-")) {
+      if (window.location.hash.startsWith("#photo-")) {
         window.history.replaceState(null, "", window.location.pathname + window.location.search);
       }
     },
