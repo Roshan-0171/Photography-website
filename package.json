@@ -7,8 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "photos": "node scripts/build-photos.mjs",
-    "photos:force": "node scripts/build-photos.mjs --force"
+    "photos": "node scripts/build-photos.mjs && node scripts/build-og.mjs",
+    "photos:force": "node scripts/build-photos.mjs --force",
+    "og": "node scripts/build-og.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.45.0",
