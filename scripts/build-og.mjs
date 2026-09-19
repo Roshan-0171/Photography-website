@@ -13,8 +13,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
+import { GALLERY_CATEGORIES } from "./photo-folders.mjs";
 
-const SOURCE = path.join("photos-source", "hero");
 const OUT_DIR = path.join("src", "app");
 const W = 1200;
 const H = 630;
@@ -28,13 +28,22 @@ const site = JSON.parse(
   }),
 );
 
-const files = (await fs.readdir(SOURCE)).filter((f) => /\.(jpe?g|png|tiff?|webp)$/i.test(f));
-if (files.length === 0) {
-  console.error(`No hero photograph in ${SOURCE}/ — skipping the share card.`);
+// The hero, or — while hero/ is empty — the first photograph of the first
+// gallery, so the card never goes missing.
+const isPhoto = (f) => /\.(jpe?g|png|tiff?|webp)$/i.test(f);
+let hero;
+for (const folder of ["hero", ...GALLERY_CATEGORIES.map((c) => c.folder)]) {
+  const dir = path.join("photos-source", folder);
+  const files = (await fs.readdir(dir).catch(() => [])).filter(isPhoto).sort();
+  if (files.length > 0) {
+    hero = path.join(dir, files[0]);
+    break;
+  }
+}
+if (!hero) {
+  console.error("No photograph in photos-source/ — skipping the share card.");
   process.exit(0);
 }
-
-const hero = path.join(SOURCE, files[0]);
 const escape = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 const overlay = Buffer.from(`<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">

@@ -30,6 +30,7 @@ export default function InquiryForm({ defaultShootType = "" }: { defaultShootTyp
   const [values, setValues] = useState<Record<string, string>>({
     name: "",
     email: "",
+    phone: "",
     shootType: defaultShootType,
     date: "",
     flexible: "",
@@ -132,7 +133,7 @@ export default function InquiryForm({ defaultShootType = "" }: { defaultShootTyp
   });
 
   return (
-    <form ref={formRef} action={formAction} noValidate className="max-w-2xl">
+    <form ref={formRef} action={formAction} noValidate className="@container max-w-2xl">
       {state.status === "failed" && (
         <div
           ref={failedRef}
@@ -186,7 +187,7 @@ export default function InquiryForm({ defaultShootType = "" }: { defaultShootTyp
         </div>
       )}
 
-      <div className="grid gap-8 sm:grid-cols-2">
+      <div className="grid gap-8 @min-[36rem]:grid-cols-2">
         <div className="min-w-0">
           <FieldLabel htmlFor={id("name")}>Your name</FieldLabel>
           <input
@@ -213,6 +214,19 @@ export default function InquiryForm({ defaultShootType = "" }: { defaultShootTyp
             This is the only way I&rsquo;ll reply.
           </p>
           <FieldError id={errorId("email")} message={errs.email} />
+        </div>
+
+        <div className="min-w-0">
+          <FieldLabel htmlFor={id("phone")}>Phone number</FieldLabel>
+          <input
+            {...field("phone")}
+            type="tel"
+            autoComplete="tel"
+          />
+          <p id={hintId("phone")} className="mt-2 text-sm text-muted-fg">
+            Optional — only if you&rsquo;d rather I call.
+          </p>
+          <FieldError id={errorId("phone")} message={errs.phone} />
         </div>
 
         <div className="min-w-0">
@@ -263,7 +277,7 @@ export default function InquiryForm({ defaultShootType = "" }: { defaultShootTyp
           <FieldError id={errorId("date")} message={errs.date} />
         </div>
 
-        <div className="min-w-0 sm:col-span-2">
+        <div className="min-w-0 @min-[36rem]:col-span-2">
           <FieldLabel htmlFor={id("budget")}>Budget range</FieldLabel>
           <select {...field("budget")} required>
             <option value="">Choose one…</option>
@@ -280,7 +294,7 @@ export default function InquiryForm({ defaultShootType = "" }: { defaultShootTyp
           <FieldError id={errorId("budget")} message={errs.budget} />
         </div>
 
-        <div className="min-w-0 sm:col-span-2">
+        <div className="min-w-0 @min-[36rem]:col-span-2">
           <FieldLabel htmlFor={id("message")}>About the shoot</FieldLabel>
           <textarea
             {...field("message")}

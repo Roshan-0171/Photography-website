@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <div className="mx-auto max-w-[90rem] px-6 py-24 sm:px-8 sm:py-32">
+    <div className="wrap py-24 sm:py-32">
       <p className="text-xs uppercase tracking-[0.18em] text-muted-fg">404</p>
-      <h1 className="mt-6 max-w-2xl text-4xl sm:text-5xl">
+      <h1 className="mt-6 max-w-2xl text-display-1">
         That page isn&rsquo;t here.
       </h1>
       <p className="mt-6 max-w-prose text-lg text-muted-fg">
@@ -38,7 +38,7 @@ export default function NotFound() {
 
       <div className="mt-12 flex flex-wrap items-center gap-6">
         <Link
-          href="/"
+          href="/home"
           className="inline-flex cursor-pointer items-center gap-2 bg-fg px-7 py-3.5 text-base text-bg transition-colors duration-200 hover:bg-secondary active:bg-secondary"
         >
           Back to the front page

@@ -47,6 +47,7 @@ export async function resendNotification(formData: FormData): Promise<void> {
   await sendNotification({
     name: row.name,
     email: row.email,
+    phone: row.phone ?? "",
     shootType: row.shoot_type,
     date: row.preferred_date ? String(row.preferred_date).slice(0, 10) : "",
     flexible: row.flexible ? "on" : "",

@@ -16,7 +16,8 @@ type Props = {
   /** Overrides the default lazy loading for images known to be in view. */
   loading?: "lazy" | "eager";
   className?: string;
-  /** Stretch to fill a positioned parent. Crops — only for the hero banner. */
+  /** Stretch to fill a positioned parent. Crops — the hero banner and the
+   *  gallery's fixed-ratio tiles; the lightbox always shows the whole frame. */
   fill?: boolean;
   /**
    * "column"  — fills its column, height follows the aspect ratio (default).
@@ -39,6 +40,13 @@ const srcSet = (photo: Photo, ext: "avif" | "webp" | "jpg") =>
  * no JavaScript and cannot get stuck if a script fails. Intrinsic width and
  * height are always emitted, which is what reserves the space and keeps CLS at
  * zero — the browser knows the shape before a single byte of the photo lands.
+ *
+ * Dragging is disabled as a casual deterrent against saving a copy — the
+ * right-click context menu is handled separately, site-wide, by
+ * ImageProtection (this stays a server component, so it cannot hold its own
+ * event handler). Neither is real protection: the file is still a public URL
+ * anyone can fetch directly or lift via devtools. It is just enough friction
+ * to stop an ordinary right-click-and-save.
  */
 export default function Picture({
   photo,
@@ -78,18 +86,22 @@ export default function Picture({
           decoding="async"
           loading={priority ? "eager" : (loading ?? "lazy")}
           fetchPriority={priority ? "high" : undefined}
+          draggable={false}
           style={{
             backgroundImage: `url("${photo.blurDataURL}")`,
             backgroundSize: "cover",
             backgroundPosition: "center",
+            WebkitUserSelect: "none",
+            userSelect: "none",
+            WebkitTouchCallout: "none",
             ...style,
           }}
           className={
             fill
-              ? `absolute inset-0 size-full object-cover ${className}`
+              ? `photo-img absolute inset-0 size-full object-cover ${className}`
               : variant === "contain"
-                ? `mx-auto h-auto max-h-[80vh] w-auto max-w-full ${className}`
-                : `h-auto w-full ${className}`
+                ? `photo-img mx-auto h-auto max-h-[80vh] w-auto max-w-full ${className}`
+                : `photo-img h-auto w-full ${className}`
           }
         />
       </picture>

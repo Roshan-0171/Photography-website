@@ -20,6 +20,9 @@ import {
 } from "@/lib/inquiry-store";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+// Loose on purpose: digits, spaces and the punctuation real numbers use
+// (+, -, (), extensions), not a strict international format.
+const PHONE = /^[0-9+\-()\s]{7,20}$/;
 
 /**
  * Every field is re-checked here regardless of what the browser did. Client
@@ -34,6 +37,10 @@ function validate(values: InquiryValues): Record<string, string> {
   if (!values.email) errors.email = "I need an email address to reply to.";
   else if (!EMAIL.test(values.email))
     errors.email = "That doesn't look like a complete email address.";
+
+  // Optional — only validated when the visitor actually gave one.
+  if (values.phone && !PHONE.test(values.phone))
+    errors.phone = "That doesn't look like a phone number.";
 
   if (!values.shootType) errors.shootType = "Choose the closest kind of shoot.";
   else if (!SHOOT_TYPES.includes(values.shootType as (typeof SHOOT_TYPES)[number]))
@@ -68,6 +75,7 @@ export async function submitInquiry(
   const values: InquiryValues = {
     name: get("name"),
     email: get("email"),
+    phone: get("phone"),
     shootType: get("shootType"),
     date: flexible ? "" : get("date"),
     flexible: flexible ? "on" : "",

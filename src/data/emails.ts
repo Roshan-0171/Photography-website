@@ -19,6 +19,8 @@ export const RESPONSE_TIME = "two working days";
 export type InquiryValues = {
   name: string;
   email: string;
+  /** Optional — left empty when the visitor did not give one. */
+  phone: string;
   shootType: string;
   /** ISO date, or empty when none was given. */
   date: string;
@@ -65,6 +67,7 @@ Shoot type:  ${v.shootType}
 Date:        ${when}
 Budget:      ${v.budget}
 Email:       ${v.email}
+Phone:       ${v.phone || "not given"}
 
 What they wrote:
 
@@ -89,13 +92,13 @@ Dear ${v.name},
 
 Thank you for writing. Your enquiry about a ${v.shootType.toLowerCase()} has reached me and I have read it.
 
-I reply to every enquiry myself, within ${RESPONSE_TIME}. If the date you mentioned is already booked I will say so straight away and suggest the nearest one I have. If I am not the right photographer for what you have in mind, I will tell you that too.
+I reply to every enquiry myself, within ${RESPONSE_TIME}. If the date you mentioned is already booked I will say so straight away and suggest the nearest one I have. If I am not the right photographer or videographer for what you have in mind, I will tell you that too.
 
 There is nothing you need to do in the meantime.
 
 ${site.name}
 ${site.role}
-${site.studio}
+${site.location}
 ${site.email}
 `;
 

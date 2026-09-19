@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
   // loaded through a runtime specifier in src/lib/inquiry-store.ts rather than
   // being listed here, because an external package is still resolved at build
   // time — which breaks a production install that has pruned devDependencies.
+
+  // The front page lives at /home; / is kept working as a permanent redirect
+  // so old links and bookmarks never 404.
+  async redirects() {
+    return [{ source: "/", destination: "/home", permanent: true }];
+  },
 };
 
 export default nextConfig;

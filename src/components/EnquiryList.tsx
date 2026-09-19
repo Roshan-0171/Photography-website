@@ -13,6 +13,7 @@ export type EnquiryView = {
   id: number;
   name: string;
   email: string;
+  phone: string | null;
   shootType: string;
   budget: string;
   message: string;
@@ -194,6 +195,19 @@ export default function EnquiryList({ rows, counts, initialTab, initialQ }: Prop
                   </a>
                 </dd>
               </div>
+              {row.phone && (
+                <div className="flex min-w-0 gap-2">
+                  <dt className="shrink-0 text-muted-fg">Phone</dt>
+                  <dd className="min-w-0 [overflow-wrap:anywhere]">
+                    <a
+                      href={`tel:${row.phone.replace(/\s/g, "")}`}
+                      className="underline underline-offset-4"
+                    >
+                      {row.phone}
+                    </a>
+                  </dd>
+                </div>
+              )}
               <div className="flex gap-2"><dt className="shrink-0 text-muted-fg">Shoot</dt><dd>{row.shootType}</dd></div>
               <div className="flex gap-2"><dt className="shrink-0 text-muted-fg">Date</dt><dd>{row.dateLabel}</dd></div>
               <div className="flex gap-2"><dt className="shrink-0 text-muted-fg">Budget</dt><dd>{row.budget}</dd></div>

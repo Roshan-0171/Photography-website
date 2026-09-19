@@ -19,6 +19,12 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import sharp from "sharp";
+import {
+  ALL_CATEGORIES,
+  GALLERY_CATEGORIES,
+  IGNORED_FOLDERS,
+  SINGLETON_CATEGORIES,
+} from "./photo-folders.mjs";
 
 // --- settings --------------------------------------------------------------
 
@@ -35,11 +41,6 @@ const WIDTHS = [400, 600, 800, 1200, 1600, 2000];
 
 const FORMATS = /** @type {const} */ (["avif", "webp", "jpg"]);
 const QUALITY = { avif: 55, webp: 76, jpg: 82 };
-
-/** Categories that appear in the galleries, in the order they are shown. */
-const GALLERY_CATEGORIES = ["portrait", "editorial", "wedding", "personal"];
-/** Single-purpose images that live outside the galleries. */
-const SINGLETON_CATEGORIES = ["hero", "about"];
 
 const SOURCE_DIR = "photos-source";
 const OUT_DIR = path.join("public", "photos");
@@ -116,8 +117,9 @@ async function assertNoMetadata(file) {
 
 async function listSources() {
   const out = [];
-  for (const category of [...GALLERY_CATEGORIES, ...SINGLETON_CATEGORIES]) {
-    const dir = path.join(SOURCE_DIR, category);
+  const taken = new Set();
+  for (const { id: category, folder } of ALL_CATEGORIES) {
+    const dir = path.join(SOURCE_DIR, folder);
     let entries;
     try {
       entries = await fs.readdir(dir);
@@ -126,10 +128,23 @@ async function listSources() {
     }
     for (const entry of entries.sort()) {
       if (!SOURCE_EXT.has(path.extname(entry).toLowerCase())) continue;
-      out.push({ category, file: path.join(dir, entry), id: slugify(entry) });
+      // The same file can sit in two galleries (a pasni that is also
+      // cultural). The first folder in photo-folders.mjs order keeps the plain
+      // id; later copies are prefixed with their category so ids stay unique.
+      let id = slugify(entry);
+      if (taken.has(id)) id = `${category}-${id}`;
+      taken.add(id);
+      out.push({ category, file: path.join(dir, entry), id });
     }
   }
   return out;
+}
+
+/** Folders in photos-source/ that nothing reads — almost always a typo or a new gallery not yet registered. */
+async function unknownFolders() {
+  const known = new Set([...ALL_CATEGORIES.map((c) => c.folder), ...IGNORED_FOLDERS]);
+  const entries = await fs.readdir(SOURCE_DIR, { withFileTypes: true }).catch(() => []);
+  return entries.filter((e) => e.isDirectory() && !known.has(e.name)).map((e) => e.name);
 }
 
 async function processOne(src, cache, force) {
@@ -145,15 +160,35 @@ async function processOne(src, cache, force) {
   const width = rotated ? meta.height : meta.width;
   const height = rotated ? meta.width : meta.height;
 
-  if (cached && cached.fingerprint === fp && cached.settings === settings && !force) {
+  const outDir = path.join(OUT_DIR, src.category);
+  const widths = WIDTHS.filter((w) => w <= Math.min(MAX_WIDTH, width));
+  if (widths.length === 0) widths.push(Math.min(MAX_WIDTH, width));
+
+  // The fingerprint only says the source is unchanged — it says nothing about
+  // whether the derivatives it once produced are still on disk. Someone can
+  // delete a file straight out of public/photos/ (the wrong place to do it,
+  // but it happens) and a fingerprint-only check would skip it forever,
+  // leaving a photograph permanently broken until the source is touched.
+  const cacheHit =
+    cached && cached.fingerprint === fp && cached.settings === settings && !force;
+  const outputsExist =
+    cacheHit &&
+    (
+      await Promise.all(
+        widths.flatMap((w) => FORMATS.map((ext) => path.join(outDir, `${src.id}-${w}.${ext}`))).map((f) =>
+          fs.access(f).then(
+            () => true,
+            () => false,
+          ),
+        ),
+      )
+    ).every(Boolean);
+
+  if (cacheHit && outputsExist) {
     return { ...cached.photo, skipped: true };
   }
 
-  const outDir = path.join(OUT_DIR, src.category);
   await fs.mkdir(outDir, { recursive: true });
-
-  const widths = WIDTHS.filter((w) => w <= Math.min(MAX_WIDTH, width));
-  if (widths.length === 0) widths.push(Math.min(MAX_WIDTH, width));
 
   for (const w of widths) {
     for (const ext of FORMATS) {
@@ -198,6 +233,8 @@ async function writeDataFile(photos, text) {
       const caption = t.caption ?? "";
       const featured = t.featured === true ? "\n    featured: true," : "";
       const year = Number.isInteger(t.year) ? t.year : null;
+      const order = Number.isFinite(t.order) ? t.order : null;
+      const home = Number.isFinite(t.home) ? t.home : null;
       const todo = alt ? "" : `\n    // TODO: write alt text for this photograph in ${ALT_FILE}`;
       return `  {
     id: ${JSON.stringify(p.id)},
@@ -211,6 +248,8 @@ async function writeDataFile(photos, text) {
     year: ${year === null ? "null" : year},${todo}
     alt: ${JSON.stringify(alt)},
     caption: ${JSON.stringify(caption)},${featured}
+    order: ${order === null ? "null" : order},
+    home: ${home === null ? "null" : home},
     blurDataURL: ${JSON.stringify(p.blurDataURL)},
   },`;
     })
@@ -235,7 +274,7 @@ async function syncTextFile(photos, text) {
   let added = 0;
   for (const p of photos) {
     if (!text[p.id]) {
-      text[p.id] = { alt: "", caption: "", year: null, featured: false };
+      text[p.id] = { alt: "", caption: "", year: null, featured: false, order: null, home: null };
       added += 1;
     } else {
       // Backfill keys added since this file was written, without touching
@@ -245,6 +284,8 @@ async function syncTextFile(photos, text) {
       if (entry.caption === undefined) entry.caption = "";
       if (entry.featured === undefined) entry.featured = false;
       if (entry.year === undefined) entry.year = null;
+      if (entry.order === undefined) entry.order = null;
+      if (entry.home === undefined) entry.home = null;
     }
   }
   const ordered = Object.fromEntries(photos.map((p) => [p.id, text[p.id]]));
@@ -260,7 +301,7 @@ const sources = await listSources();
 if (sources.length === 0) {
   console.error(
     c.red(`No photographs found under ${SOURCE_DIR}/.`) +
-      `\nExpected subfolders: ${[...GALLERY_CATEGORIES, ...SINGLETON_CATEGORIES].join(", ")}`,
+      `\nExpected subfolders: ${ALL_CATEGORIES.map((c) => c.folder).join(", ")}`,
   );
   process.exit(1);
 }
@@ -270,6 +311,26 @@ if (duplicates.length > 0) {
   console.error(c.red(`Duplicate photo ids: ${[...new Set(duplicates)].join(", ")}`));
   console.error("Two files slugify to the same name. Rename one.");
   process.exit(1);
+}
+
+// hero/ and about/ hold at most one photograph each — the site looks each up
+// by folder, not by filename, so swapping the file is enough on its own.
+for (const { id: category, folder } of SINGLETON_CATEGORIES) {
+  const matches = sources.filter((s) => s.category === category);
+  if (matches.length > 1) {
+    console.error(
+      c.red(`photos-source/${folder}/ holds ${matches.length} photographs; it may only hold one:`),
+    );
+    for (const m of matches) console.error(c.red(`  ${m.file}`));
+    process.exit(1);
+  }
+}
+
+for (const name of await unknownFolders()) {
+  console.log(
+    c.yellow(`  photos-source/${name}/ is not published — add it to scripts/photo-folders.mjs`) +
+      c.yellow(` and src/data/photos.ts, or to IGNORED_FOLDERS.`),
+  );
 }
 
 const cache = force ? {} : await readJson(CACHE_FILE, {});
@@ -293,9 +354,11 @@ for (const src of sources) {
   }
 }
 
-// Remove derivatives whose original is gone, so /public cannot drift.
+// Remove derivatives whose original is gone, so /public cannot drift. Only
+// the category folders this script writes are swept — anything else in
+// public/photos/ (the logo files, for one) is hand-placed and left alone.
 const live = new Set(photos.map((p) => `${p.category}/${p.id}`));
-for (const category of [...GALLERY_CATEGORIES, ...SINGLETON_CATEGORIES]) {
+for (const { id: category } of ALL_CATEGORIES) {
   const dir = path.join(OUT_DIR, category);
   let files;
   try {
@@ -310,6 +373,7 @@ for (const category of [...GALLERY_CATEGORIES, ...SINGLETON_CATEGORIES]) {
       console.log(`  ${c.yellow("removed")}    ${category}/${f}  ${c.dim("(no original)")}`);
     }
   }
+  if ((await fs.readdir(dir)).length === 0) await fs.rmdir(dir);
 }
 
 const addedText = await syncTextFile(photos, text);
@@ -323,7 +387,7 @@ console.log(
 if (addedText > 0) console.log(c.dim(`  ${addedText} new entries added to ${ALT_FILE}`));
 
 // At most one featured photograph per gallery — a second one silently loses.
-for (const category of GALLERY_CATEGORIES) {
+for (const { id: category } of GALLERY_CATEGORIES) {
   const flagged = photos.filter((p) => p.category === category && text[p.id]?.featured === true);
   if (flagged.length > 1) {
     console.log(

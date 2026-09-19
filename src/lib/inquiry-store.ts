@@ -37,6 +37,7 @@ create table if not exists inquiries (
 create index if not exists inquiries_created_at_idx on inquiries (created_at desc);
 alter table inquiries add column if not exists status text not null default 'new';
 create index if not exists inquiries_status_idx on inquiries (status, created_at desc);
+alter table inquiries add column if not exists phone text;
 `;
 
 export const STATUSES = ["new", "replied", "archived"] as const;
@@ -45,8 +46,8 @@ export const isStatus = (v: unknown): v is Status => STATUSES.includes(v as Stat
 
 export const INSERT_SQL = `
 insert into inquiries
-  (name, email, shoot_type, preferred_date, flexible, budget, message, ip)
-values ($1, $2, $3, $4, $5, $6, $7, $8)
+  (name, email, phone, shoot_type, preferred_date, flexible, budget, message, ip)
+values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 returning id
 `;
 
@@ -55,7 +56,7 @@ update inquiries set notified = $2, confirmed = $3 where id = $1
 `;
 
 export const RECENT_SQL = `
-select id, created_at, name, email, shoot_type, preferred_date, flexible,
+select id, created_at, name, email, phone, shoot_type, preferred_date, flexible,
        budget, message, notified, confirmed, status
 from inquiries
 order by created_at desc
@@ -68,7 +69,7 @@ limit $1
  * escapes LIKE wildcards in the term, so a visitor typing "%" finds nobody.
  */
 export const LIST_SQL = `
-select id, created_at, name, email, shoot_type, preferred_date, flexible,
+select id, created_at, name, email, phone, shoot_type, preferred_date, flexible,
        budget, message, notified, confirmed, status
 from inquiries
 where ($1::text is null or status = $1)
@@ -86,7 +87,7 @@ select count(*)::int as n from inquiries where created_at > now() - interval '7 
 `;
 
 export const GET_SQL = `
-select id, created_at, name, email, shoot_type, preferred_date, flexible,
+select id, created_at, name, email, phone, shoot_type, preferred_date, flexible,
        budget, message, notified, confirmed, status
 from inquiries where id = $1
 `;
@@ -197,6 +198,7 @@ export async function saveInquiry(
   const rows = (await query(INSERT_SQL, [
     values.name,
     values.email,
+    values.phone || null,
     values.shootType,
     values.date || null,
     values.flexible === "on",
@@ -213,6 +215,7 @@ export type StoredInquiry = {
   created_at: string;
   name: string;
   email: string;
+  phone: string | null;
   shoot_type: string;
   preferred_date: string | null;
   flexible: boolean;

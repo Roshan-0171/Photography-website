@@ -9,7 +9,7 @@ import { packages } from "@/data/packages";
 export const metadata: Metadata = {
   title: "Services",
   description:
-    "Portrait, family and editorial photography packages in Kathmandu, with prices listed in full.",
+    "Portrait, family and editorial photography packages, with prices listed in full.",
 };
 
 
@@ -22,9 +22,9 @@ const notes = [
 
 export default function ServicesPage() {
   return (
-    <div className="mx-auto max-w-[90rem] px-6 py-12 sm:px-8 sm:py-16">
+    <div className="wrap py-12 sm:py-16">
       <header className="max-w-3xl">
-        <h1 className="text-4xl sm:text-5xl">Services</h1>
+        <h1 className="text-display-1">Services</h1>
         <p className="mt-6 text-lg text-muted-fg">
           Every price is on this page. If a shoot doesn&rsquo;t fit one of these
           three shapes, tell me what you need and I&rsquo;ll quote it plainly —
@@ -32,17 +32,21 @@ export default function ServicesPage() {
         </p>
       </header>
 
-      <div className="mt-16 grid gap-8 lg:grid-cols-3">
-        {packages.map((pkg, i) => (
+      {/* auto-fit, not lg:grid-cols-3: the cards go three-up when there is room
+          for three ~18rem columns, two-up when there isn't, one-up on a phone —
+          decided by the space available, not by which viewport bucket the
+          browser zoom happens to land in. Each card is its own container, so
+          its padding responds to the card's width rather than the window's. */}
+      <div className="mt-16 grid grid-cols-[repeat(auto-fit,minmax(min(18rem,100%),1fr))] gap-8">
+        {packages.map((pkg) => (
           <div
             key={pkg.name}
             id={pkg.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}
-            className="h-full scroll-mt-28"
+            className="@container h-full scroll-mt-28"
           >
           <Reveal
             as="section"
-            delay={i * 70}
-            className={`relative flex h-full min-w-0 flex-col border p-6 sm:p-8 ${
+            className={`relative flex h-full min-w-0 flex-col border p-6 @min-[22rem]:p-8 ${
               pkg.featured ? "border-fg" : "border-line"
             }`}
           >
@@ -95,7 +99,7 @@ export default function ServicesPage() {
         aria-labelledby="faq-heading"
         className="mt-24 border-t border-line pt-16"
       >
-        <h2 id="faq-heading" className="text-2xl sm:text-3xl">
+        <h2 id="faq-heading" className="text-display-3">
           Questions people ask
         </h2>
         {/* Plain markup rather than an accordion: every answer is short, and a
@@ -129,7 +133,7 @@ export default function ServicesPage() {
         aria-labelledby="notes-heading"
         className="mt-24 border-t border-line pt-16"
       >
-        <h2 id="notes-heading" className="text-2xl sm:text-3xl">
+        <h2 id="notes-heading" className="text-display-3">
           The small print, in full
         </h2>
         <dl className="mt-12 grid gap-8 sm:grid-cols-2">

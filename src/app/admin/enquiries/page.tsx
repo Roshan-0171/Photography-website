@@ -38,6 +38,7 @@ export default async function EnquiriesPage({ searchParams }: PageProps<"/admin/
     id: r.id,
     name: r.name,
     email: r.email,
+    phone: r.phone,
     shootType: r.shoot_type,
     budget: r.budget,
     message: r.message,
@@ -52,9 +53,9 @@ export default async function EnquiriesPage({ searchParams }: PageProps<"/admin/
   }));
 
   return (
-    <div className="mx-auto max-w-[90rem] px-6 py-16 sm:px-8">
+    <div className="wrap py-16">
       <div className="flex flex-wrap items-baseline justify-between gap-6">
-        <h1 className="text-3xl sm:text-4xl">Enquiries</h1>
+        <h1 className="text-display-2">Enquiries</h1>
         <form action={signOut}>
           <button
             type="submit"

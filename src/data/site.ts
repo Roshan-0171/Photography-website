@@ -12,40 +12,47 @@
  * ─────────────────────────────────────────────────────────────────────────
  */
 export const site = {
-  name: "Rohit Shrestha",
-  role: "Portrait & Editorial Photographer",
-  city: "Kathmandu, Nepal",
-  tagline: "Portraits made slowly, in the light people actually live in.",
+  name: "Roh Portraits",
+  role: "Photographer & Videographer",
+  city: "Texas, USA",
+  /** The slogan — the hero headline's second line and the footer's. */
+  tagline: "Turning moments into memories",
+  /** One full sentence for search results and link previews, where a
+   *  four-word slogan on its own says too little. */
+  description:
+    "Portrait, wedding and editorial photography and videography — based in Texas, available to travel nationwide.",
 
   // Published in the footer, on /contact, in the JSON-LD, and it is what a
   // visitor is told to write to when an enquiry fails to send.
   email: "rohportraits@gmail.com",
 
-  // PLACEHOLDER — a real, reachable number.
-  phone: "+977 9800 000 000",
+  // No fixed studio address is published — the business is travel-based.
+  // Shown on /contact, in /story, and in the confirmation email signature.
+  location: "Texas, USA — open to travel nationwide",
 
-  studio: "Jhamsikhel, Lalitpur — by appointment",
+  instagram: "https://instagram.com/roh_portraits",
 
-  // PLACEHOLDER — a real profile URL, or delete the footer link that uses it.
-  instagram: "https://instagram.com/",
+  // Opens Instagram straight into a DM with the account above, rather than its
+  // profile — used by the "Message me on Instagram" button on /contact.
+  instagramDm: "https://ig.me/m/roh_portraits",
 
   // The live domain. Drives metadataBase, canonical URLs and Open Graph, and
   // is the domain that needs the Resend DNS records.
   url: "https://rohportraits.com",
 
-  /** Used in the JSON-LD business record. Should match `studio` above. */
+  /** Used in the JSON-LD business record. Deliberately state-level, not a
+   *  street address — there is no fixed studio to publish one for. */
   address: {
-    locality: "Lalitpur",
-    region: "Bagmati",
-    country: "NP",
-    areaServed: "Kathmandu Valley",
+    region: "Texas",
+    country: "US",
+    areaServed: "United States — available to travel nationwide",
   },
 } as const;
 
 export const nav = [
-  { href: "/", label: "Home" },
+  { href: "/home", label: "Home" },
   { href: "/work", label: "Work" },
   { href: "/story", label: "Story" },
-  { href: "/services", label: "Services" },
+  // { href: "/services", label: "Services" },
   { href: "/contact", label: "Contact" },
 ] as const;

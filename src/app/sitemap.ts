@@ -10,9 +10,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
   return nav.map((item) => ({
-    url: `${site.url}${item.href === "/" ? "" : item.href}`,
+    url: `${site.url}${item.href}`,
     lastModified: now,
-    changeFrequency: item.href === "/" ? "monthly" : "yearly",
-    priority: item.href === "/" ? 1 : item.href === "/work" ? 0.9 : 0.7,
+    changeFrequency: item.href === "/home" ? "monthly" : "yearly",
+    priority: item.href === "/home" ? 1 : item.href === "/work" ? 0.9 : 0.7,
   }));
 }

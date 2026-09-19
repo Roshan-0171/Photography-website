@@ -11,8 +11,8 @@ export default async function AdminSignInPage() {
   if (await isSignedIn()) redirect("/admin/enquiries");
 
   return (
-    <div className="mx-auto max-w-[90rem] px-6 py-24 sm:px-8">
-      <h1 className="text-3xl sm:text-4xl">Sign in</h1>
+    <div className="wrap py-24">
+      <h1 className="text-display-2">Sign in</h1>
       <p className="mt-4 max-w-prose text-muted-fg">
         The enquiries list holds people&rsquo;s contact details. It is only
         available to you.

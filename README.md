@@ -42,19 +42,63 @@ src/data/photos.generated.ts                              ← committed, DO NOT 
 src/data/photo-text.json                                  ← committed, YOU edit this
 ```
 
-### Adding photographs
+### Adding, removing and reordering photographs
 
-1. Drop files into the right `photos-source/<category>/` folder. Any name you
-   like — `Kiran on the roof.JPG` becomes the id `kiran-on-the-roof`. Prefix with
-   numbers (`01-`, `02-`) if you want to control the order.
-2. Run `npm run photos`.
-3. Write the alt text. The script adds a blank entry per photograph to
-   [src/data/photo-text.json](src/data/photo-text.json); fill in `alt` and,
-   optionally, `caption`. Your words live in that file alone and survive every
-   rebuild — the generated file is overwritten each run and must never be edited.
+Everything about a photograph — which one it is, its order, where it appears,
+its alt text and caption — comes from two places: the file itself in
+`photos-source/`, and its entry in
+[src/data/photo-text.json](src/data/photo-text.json). Nothing else ever needs
+editing; there is no other file that names an individual photograph.
 
-Deleting an original and re-running removes its derivatives too, so `/public`
-cannot drift out of step.
+1. **Add** — drop a file into the right `photos-source/<category>/` folder.
+   Any name you like — `Kiran on the roof.JPG` becomes the id
+   `kiran-on-the-roof`.
+2. **Remove** — delete the file from `photos-source/`. On the next run its
+   derivatives in `/public`, its entry in `photos.generated.ts` and its entry
+   in `photo-text.json` are all removed, so nothing can drift out of step —
+   note this means its alt text and caption are gone too, not just hidden.
+3. **Reorder** — set `order` on the photograph's entry in `photo-text.json` to
+   a number. Lower numbers sort first within that photograph's gallery.
+   Photographs with no `order` set sort after every ordered one, alphabetically
+   by filename — so you only need to touch the ones you actually want to move.
+   Renaming a file is never required to change where it appears.
+4. Run `npm run photos`.
+5. Write the alt text. The script adds a blank entry per photograph to
+   `photo-text.json`; fill in `alt` and, optionally, `caption`. Your words live
+   in that file alone and survive every rebuild — the generated file
+   (`photos.generated.ts`) is overwritten each run and must never be edited.
+
+To change a photograph without changing which slot it occupies — swap out a
+weak frame for a better one — just replace the file in `photos-source/` (any
+filename) and re-run. Nothing elsewhere references the old filename, so
+nothing else needs to change; the one exception is the photograph's own
+`photo-text.json` entry, which follows its old id and won't automatically
+carry over alt text written for a completely different picture.
+
+### The home page
+
+The front page lives at `/home` (`/` permanently redirects there, so old
+links and bookmarks keep working).
+
+`home` in `photo-text.json` controls what appears in "Selected work" on it and
+in what order — set it on any photograph in any gallery, unset it to remove
+one, renumber to reorder.
+
+To pull an entire category off the home page at once — no weddings on the
+front page, say — rather than clearing `home` on every photograph in it one by
+one, edit `homeCategories` near the top of
+[src/data/photos.ts](src/data/photos.ts). It is the one place in this
+workflow that is genuine code rather than data, kept deliberately short (a
+one-line array of the four category names) for exactly this kind of bulk,
+occasional edit; day-to-day curation still happens in `photo-text.json`.
+
+### The hero banner and the /story portrait
+
+`photos-source/hero/` and `photos-source/about/` each hold exactly one file —
+the full-bleed home page banner and the portrait on `/story`. The build fails
+loudly if either folder ever holds more than one. Because the site looks each
+one up by folder rather than by filename, swapping either photograph is just:
+delete the old file, drop in the new one (any name), run `npm run photos`.
 
 ### What the script guarantees
 
@@ -78,10 +122,13 @@ CI so a photograph can never be published without it.
 
 ### Layout rules the code keeps
 
-Galleries never centre-crop: each frame keeps its own aspect ratio, because the
-composition is the work. The **only** cropped image on the site is the home hero,
-which is a full-bleed banner — remove `fill` from the `<Picture>` in
-[src/app/page.tsx](src/app/page.tsx) to show it whole instead.
+Gallery tiles are a uniform 4:5 grid — two columns on a phone, four on a
+desktop, chosen by the gallery's own width — so every row lines up. To get
+there each tile is a centre crop (weighted slightly toward the top, where a
+face usually is). The **whole, uncropped frame is always what the lightbox
+shows**: the grid is a contact sheet, the lightbox is the print. The home hero
+is the other crop, a full-bleed banner in
+[src/app/home/page.tsx](src/app/home/page.tsx).
 
 The hero is the LCP element: preloaded, high fetch priority, never lazy. Keep it
 that way.

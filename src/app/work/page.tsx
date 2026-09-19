@@ -9,7 +9,7 @@ import { byCategory, categories, photos, type Category } from "@/data/photos";
 export const metadata: Metadata = {
   title: "Work",
   description:
-    "Portrait, editorial, wedding and personal photography from across the Kathmandu Valley.",
+    "Portrait, editorial, wedding and personal photography and videography, available nationwide.",
 };
 
 const VALID_IDS = new Set<string>(categories.map((c) => c.id));
@@ -42,32 +42,17 @@ export default async function WorkPage({ searchParams }: PageProps<"/work">) {
       : `${byCategory(selected).length} pictures. Every frame is shown whole — nothing here is cropped to fit a grid.`;
 
   return (
-    <div className="mx-auto max-w-[90rem] px-6 py-12 sm:px-8 sm:py-16">
+    <div className="wrap py-12 sm:py-16">
       {/* Fragment-only safety net for old /work#portrait links — see the
           component for why this can't be done server-side. */}
       <WorkHashRedirect />
 
       <header className="max-w-3xl">
-        <h1 className="text-4xl sm:text-5xl">Work</h1>
+        <h1 className="text-display-1">Work</h1>
         <p className="mt-6 text-lg text-muted-fg">{intro}</p>
       </header>
 
-      {/* Real links to every filtered view, for crawlers. Hidden from sighted
-          users and screen readers alike (aria-hidden + sr-only) because the
-          select below is the actual control for both — this exists only so
-          each ?type= URL has an <a href> pointing at it somewhere in the page,
-          the same way a search engine would otherwise have no way to discover
-          a filter that lives behind a select's onChange. */}
-      <nav aria-hidden="true" className="sr-only">
-        <a href="/work">All — {photos.length} pictures</a>
-        {nonEmpty.map((c) => (
-          <a key={c.id} href={`/work?type=${c.id}`}>
-            {c.label} — {byCategory(c.id).length} pictures
-          </a>
-        ))}
-      </nav>
-
-      <div className="mt-12">
+      <div className="mt-10">
         <WorkFilter options={options} selected={selected} />
       </div>
 
@@ -76,10 +61,10 @@ export default async function WorkPage({ searchParams }: PageProps<"/work">) {
           key={c.id}
           id={c.id}
           aria-labelledby={`${c.id}-heading`}
-          className="scroll-mt-28 pt-16"
+          className="scroll-mt-28 pt-12"
         >
-          <Reveal as="header" className="max-w-2xl pb-8">
-            <h2 id={`${c.id}-heading`} className="text-2xl sm:text-3xl">
+          <Reveal as="header" className="max-w-2xl pb-6">
+            <h2 id={`${c.id}-heading`} className="text-display-3">
               {c.label}
             </h2>
             <p className="mt-2 text-muted-fg">{c.blurb}</p>

@@ -1,23 +1,28 @@
 import type { Metadata } from "next";
-import { Archivo, Space_Grotesk } from "next/font/google";
+import { Cormorant_Garamond, Inter } from "next/font/google";
 
 import Analytics from "@/components/Analytics";
+import ImageLoadReveal from "@/components/ImageLoadReveal";
+import ImageProtection from "@/components/ImageProtection";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import { site } from "@/data/site";
 import "./globals.css";
 
-const archivo = Archivo({
-  variable: "--font-archivo",
+/* Cormorant for titles — a light, high-contrast Garamond with the feel of a
+   film title card — over Inter for everything read at body size, where a
+   quiet sans lets the photographs carry the mood. */
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -27,13 +32,13 @@ export const metadata: Metadata = {
     default: `${site.name} — ${site.role}, ${site.city}`,
     template: `%s — ${site.name}`,
   },
-  description: site.tagline,
+  description: site.description,
   openGraph: {
     type: "website",
     locale: "en_GB",
     siteName: site.name,
     title: `${site.name} — ${site.role}`,
-    description: site.tagline,
+    description: site.description,
   },
   robots: { index: true, follow: true },
 };
@@ -42,14 +47,12 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
   name: site.name,
-  description: site.tagline,
+  description: site.description,
   jobTitle: site.role,
   email: site.email,
-  telephone: site.phone,
   url: site.url,
   address: {
     "@type": "PostalAddress",
-    addressLocality: site.address.locality,
     addressRegion: site.address.region,
     addressCountry: site.address.country,
   },
@@ -64,7 +67,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       // hydrates. React never renders that attribute, so it must be told not to
       // treat the difference as a mismatch.
       suppressHydrationWarning
-      className={`${archivo.variable} ${spaceGrotesk.variable} h-full`}
+      className={`${cormorant.variable} ${inter.variable} h-full`}
     >
       <head>
         <script
@@ -74,14 +77,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
       </head>
       <body className="flex min-h-full flex-col">
-        {/* Applied only when scripting is unavailable, so the scroll reveal never
-            hides content that nothing can bring back. A <noscript> block changes
-            no DOM, which keeps server and client markup identical at hydration. */}
-        <noscript>
-          <style>{
-            ".reveal{opacity:1!important;transform:none!important;transition:none!important}"
-          }</style>
-        </noscript>
+        {/* Two-pixel reading-progress hairline along the top edge, driven by
+            the page scroll in CSS. Purely decorative; hidden without support. */}
+        <div aria-hidden="true" className="scroll-progress" />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:bg-fg focus:px-4 focus:py-2 focus:text-bg"
@@ -93,6 +91,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </main>
         <SiteFooter />
+        <ImageProtection />
+        <ImageLoadReveal />
         <Analytics />
         <script
           type="application/ld+json"

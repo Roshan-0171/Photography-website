@@ -104,15 +104,18 @@ export default function Lightbox({ photos, index, onClose, onIndexChange }: Prop
     return () => restoreRef.current?.focus?.();
   }, []);
 
-  // Lock the page behind the overlay without shifting it sideways.
+  // Lock the page behind the overlay without shifting it sideways, and flag
+  // the body so the stylesheet can hide the sticky header for the duration.
   useEffect(() => {
     const { overflow, paddingRight } = document.body.style;
     const gutter = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = "hidden";
     if (gutter > 0) document.body.style.paddingRight = `${gutter}px`;
+    document.body.dataset.lightboxOpen = "";
     return () => {
       document.body.style.overflow = overflow;
       document.body.style.paddingRight = paddingRight;
+      delete document.body.dataset.lightboxOpen;
     };
   }, []);
 
@@ -192,49 +195,56 @@ export default function Lightbox({ photos, index, onClose, onIndexChange }: Prop
     go(dx < 0 ? 1 : -1);
   };
 
+  /**
+   * Click-away. Only a click that lands on the sheet itself closes — the
+   * target/currentTarget check means a click on the image (zoom), the
+   * caption, the arrows or the close button never bubbles up into a close.
+   * Attached to both the root and the stage, since the stage's padding is
+   * the sheet a visitor actually sees around the photograph.
+   */
+  const closeIfBackdrop = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) onClose();
+  };
+
   return createPortal(
     <div
       ref={panelRef}
       role="dialog"
       aria-modal="true"
       aria-label={`Image viewer, ${index + 1} of ${photos.length}`}
-      className="fixed inset-0 z-50 flex flex-col bg-box/95 text-box-fg backdrop-blur-sm"
+      className="lightbox-backdrop fixed inset-0 z-50 flex flex-col text-box-fg"
+      onClick={closeIfBackdrop}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      {/* Click-away target, kept out of the accessibility tree — Escape and the
-          close button are the documented ways out. */}
-      <button
-        type="button"
-        aria-hidden="true"
-        tabIndex={-1}
-        onClick={onClose}
-        className="absolute inset-0 cursor-zoom-out"
-      />
-
-      <header className="relative flex items-center justify-between gap-6 border-b border-box-line/60 px-6 py-2">
+      <header className="flex items-center justify-between gap-6 border-b border-box-line/60 px-6 py-2">
         <p className="font-sans text-sm tabular-nums text-box-fg/70">
           <span className="sr-only">Image </span>
           {index + 1} / {photos.length}
         </p>
+        {/* A semi-opaque white pill, so the label stays legible when a bright
+            photograph sits behind the sheet. */}
         <button
           ref={closeRef}
           type="button"
           onClick={onClose}
-          className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-box-line px-5 py-2 text-sm text-box-fg transition-colors duration-200 hover:bg-box-fg hover:text-box active:bg-box-fg active:text-box focus-visible:outline-box-fg"
+          className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-box-line bg-box/70 px-5 py-2 text-sm text-box-fg transition-colors duration-200 hover:bg-box-fg hover:text-box active:bg-box-fg active:text-box focus-visible:outline-box-fg"
         >
           <X className="size-4" aria-hidden="true" />
           Close
         </button>
       </header>
 
-      <div className="relative flex min-h-0 flex-1 items-center justify-center px-6 py-6 sm:px-16">
+      <div
+        className="relative flex min-h-0 flex-1 items-center justify-center px-6 py-6 sm:px-16"
+        onClick={closeIfBackdrop}
+      >
         {many && (
           <button
             type="button"
             onClick={() => go(-1)}
             aria-label="Previous image"
-            className="absolute left-2 z-10 grid size-12 cursor-pointer place-items-center rounded-full border border-box-line/70 bg-box/60 text-box-fg transition-colors duration-200 hover:bg-box-fg hover:text-box active:bg-box-fg active:text-box focus-visible:outline-box-fg sm:left-4"
+            className="absolute left-2 z-10 grid size-12 cursor-pointer place-items-center rounded-full border border-box-line/70 bg-box/70 text-box-fg transition-colors duration-200 hover:bg-box-fg hover:text-box active:bg-box-fg active:text-box focus-visible:outline-box-fg sm:left-4"
           >
             <ChevronLeft className="size-6" aria-hidden="true" />
           </button>
@@ -280,14 +290,14 @@ export default function Lightbox({ photos, index, onClose, onIndexChange }: Prop
             type="button"
             onClick={() => go(1)}
             aria-label="Next image"
-            className="absolute right-2 z-10 grid size-12 cursor-pointer place-items-center rounded-full border border-box-line/70 bg-box/60 text-box-fg transition-colors duration-200 hover:bg-box-fg hover:text-box active:bg-box-fg active:text-box focus-visible:outline-box-fg sm:right-4"
+            className="absolute right-2 z-10 grid size-12 cursor-pointer place-items-center rounded-full border border-box-line/70 bg-box/70 text-box-fg transition-colors duration-200 hover:bg-box-fg hover:text-box active:bg-box-fg active:text-box focus-visible:outline-box-fg sm:right-4"
           >
             <ChevronRight className="size-6" aria-hidden="true" />
           </button>
         )}
       </div>
 
-      <p className="relative hidden px-6 pb-6 text-center text-xs text-box-fg/50 sm:block">
+      <p className="hidden px-6 pb-6 text-center text-xs text-box-fg/60 sm:block">
         Arrow keys to move between images · + / − to zoom · Esc to close
       </p>
 

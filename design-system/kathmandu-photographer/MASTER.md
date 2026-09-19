@@ -40,15 +40,22 @@
 
 ### Typography
 
-- **Heading Font:** Archivo
-- **Body Font:** Space Grotesk
-- **Mood:** minimal, portfolio, designer, creative, clean, artistic
-- **Google Fonts:** [Archivo + Space Grotesk](https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap)
+> **Approved override (2026-09-19):** switched from the original Minimalist
+> Portfolio pairing (Archivo + Space Grotesk) to a cinematic editorial serif
+> pairing, at the photographer's request for a more dramatic, film-poster feel.
+
+- **Heading Font:** Cormorant Garamond (400–700, italic available; set at 500)
+- **Body Font:** Inter (variable)
+- **Mood:** cinematic, quiet, editorial — a film-title serif over a plain sans
+- **Google Fonts:** [Cormorant Garamond + Inter](https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Inter:wght@100..900&display=swap)
 
 **CSS Import:**
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Inter:wght@100..900&display=swap');
 ```
+
+> Superseded the Playfair Display + Source Serif 4 pairing (2026-09-19, same
+> day) — that read as heavy on a photo-first page; this is lighter and simpler.
 
 ### Spacing Variables
 

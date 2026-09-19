@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowRight, Camera, Clock, Handshake } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Camera, Clock, Handshake } from "lucide-react";
 
 import Picture from "@/components/Picture";
 import Reveal from "@/components/Reveal";
@@ -10,7 +10,7 @@ import { site } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "Story",
-  description: `How ${site.name} works, who he photographs, and what to expect from a session in Kathmandu.`,
+  description: `How ${site.name} works, who he photographs and films, and what to expect from a session.`,
 };
 
 const approach = [
@@ -33,59 +33,72 @@ const approach = [
 
 export default function StoryPage() {
   return (
-    <div className="mx-auto max-w-[90rem] px-6 py-12 sm:px-8 sm:py-16">
-      <div className="grid gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16">
-        <div className="min-w-0 lg:order-2">
-          <Picture
-            photo={selfPortrait}
-            priority
-            sizes="(min-width: 1024px) 45vw, 100vw"
-            className="bg-muted"
-          />
-        </div>
+    <div className="wrap py-12 sm:py-16">
+      <div
+        className={
+          selfPortrait
+            ? "grid gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16"
+            : "grid gap-12"
+        }
+      >
+        {selfPortrait && (
+          <div className="min-w-0 lg:order-2">
+            <Picture
+              photo={selfPortrait}
+              priority
+              sizes="(min-width: 1024px) 45vw, 100vw"
+              className="bg-muted"
+            />
+          </div>
+        )}
 
         <div className="min-w-0 lg:order-1">
           <p className="text-xs uppercase tracking-[0.18em] text-muted-fg">
             About
           </p>
-          <h1 className="mt-6 text-4xl sm:text-5xl">
+          <h1 className="mt-6 text-display-1">
             I photograph people where they already are.
           </h1>
 
           <div className="mt-8 max-w-prose space-y-6 text-lg leading-relaxed text-secondary">
             <p>
-              I&rsquo;m {site.name}, a portrait and editorial photographer based
-              in {site.city}. I started in 2015 assisting on magazine shoots
-              around Durbar Square, mostly carrying other people&rsquo;s bags,
-              and I have been making my own pictures full time since 2018.
+              I&rsquo;m Rohit Shrestha, and {site.name} is the name I work
+              under. Wedding and event photography and video, based in{" "}
+              {site.city}, and happy to travel for it.
             </p>
             <p>
-              The work divides roughly in four. Commissioned portraits —
-              families, founders, musicians, anyone who needs one good picture
-              of themselves. Editorial assignments for magazines and hospitality
-              brands, usually people photographed at their trade. Weddings,
-              photographed the way they happen rather than the way they are
-              staged. And personal work: the valley in monsoon, festival
-              crowds, the ridge at dusk. That last category pays nothing and is
-              the reason I do the rest.
+              Most of what I shoot is the wedding day and everything around
+              it: the vows, the reception, the families who flew in for it, the
+              groom pulling up in style. A good deal of it is Nepali weddings
+              and celebrations, where everyone turns up dressed in culture and
+              the family portrait is the one that matters most. I also cover
+              the days on either side of the ceremony, and the events that
+              follow &mdash; engagements, receptions, birthdays, anniversaries,
+              the milestones a family wants on record.
             </p>
             <p>
-              I work in English and Nepali. My studio is in{" "}
-              {site.studio.split("—")[0].trim()}, but most sittings happen at
+              I film as well as photograph, so a day can come back as stills, a
+              short film, or both. The ceremony in full, the speeches, the parts
+              people miss while they&rsquo;re busy living them.
+            </p>
+            <p>
+              Alongside the events: family and individual portraits, usually at
               home, at work, or somewhere that means something to the person in
-              front of the camera.
+              front of the camera. And personal work from wherever I&rsquo;ve
+              travelled, most recently the coastline at Big Sur. That last
+              category pays nothing and is the reason I do the rest.
             </p>
           </div>
         </div>
       </div>
 
       <section aria-labelledby="approach-heading" className="pt-24">
-        <Reveal as="h2" className="text-2xl sm:text-3xl">
+        <Reveal as="h2" className="text-display-3">
           <span id="approach-heading">How I work</span>
         </Reveal>
         <ul className="mt-12 grid gap-12 md:grid-cols-3">
-          {approach.map((item, i) => (
-            <Reveal as="li" key={item.title} delay={i * 70}>
+          {approach.map((item) => (
+            <Reveal as="li" key={item.title}>
               <item.icon className="size-6 text-fg" aria-hidden="true" />
               <h3 className="mt-6 text-lg">{item.title}</h3>
               <p className="mt-2 text-muted-fg">{item.body}</p>
@@ -121,28 +134,17 @@ export default function StoryPage() {
         </section>
       )}
 
-      <section
-        aria-labelledby="clients-heading"
-        className="mt-24 border-t border-line pt-16"
-      >
-        <h2
-          id="clients-heading"
-          className="text-xs uppercase tracking-[0.14em] text-muted-fg"
+      <div className="mt-24 border-t border-line pt-16">
+        <a
+          href={site.instagram}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex cursor-pointer items-center gap-1 text-sm text-fg underline-offset-4 hover:underline"
         >
-          Commissioned by
-        </h2>
-        <ul className="mt-6 flex flex-wrap gap-x-8 gap-y-2 text-secondary">
-          {[
-            "A national daily",
-            "A Kathmandu hospitality group",
-            "Two heritage-textile labels",
-            "A travel quarterly",
-            "An independent record label",
-          ].map((client) => (
-            <li key={client}>{client}</li>
-          ))}
-        </ul>
-      </section>
+          More on Instagram, @roh_portraits
+          <ArrowUpRight className="size-4" aria-hidden="true" />
+        </a>
+      </div>
 
       <div className="mt-16">
         <Link

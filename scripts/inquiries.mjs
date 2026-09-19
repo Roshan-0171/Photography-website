@@ -68,7 +68,7 @@ for (const r of rows) {
   const warn = r.notified ? "" : `  ${bold("\x1b[33m← email never sent\x1b[0m")}`;
   const status = r.status && r.status !== "new" ? dim(`  [${r.status}]`) : "";
   console.log(`${bold(`#${r.id}  ${r.name}`)}  ${dim(when)}${status}${warn}`);
-  console.log(dim(`  ${r.email}   ${r.shoot_type}   ${date}   ${r.budget}`));
+  console.log(dim(`  ${r.email}${r.phone ? `   ${r.phone}` : ""}   ${r.shoot_type}   ${date}   ${r.budget}`));
   console.log(`  ${r.message.replace(/\s+/g, " ").slice(0, 150)}`);
   console.log();
 }

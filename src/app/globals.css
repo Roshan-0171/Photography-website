@@ -5,8 +5,8 @@
    Source: ui-ux-pro-max design system (design-system/kathmandu-photographer/)
    Style:  Minimalism & Swiss Style
    Colors: Architecture/Interior light row (approved light-chrome override of the
-           Photography Studio dark row, whose black surface is kept for the
-           lightbox only — see MASTER.md "Approved overrides").
+           Photography Studio dark row — see MASTER.md "Approved overrides").
+           The lightbox is a frosted white sheet, not the dark row's black.
    Density: 3/10 — Spacious
 --------------------------------------------------------------------------- */
 
@@ -24,15 +24,20 @@
   --color-ring: #171717;
   --color-destructive: #dc2626;
 
-  /* Lightbox — the one dark surface, from the Photography Studio row. */
-  --color-box: #000000;
-  --color-box-fg: #fafafa;
-  --color-box-line: #3f3f46;
+  /* Lightbox — a frosted white sheet over the page, in both themes, so the
+     photograph is the only thing with any depth. The ink is fixed dark: it has
+     to read over a bright photograph, not over the page behind it. */
+  --color-box: #ffffff;
+  --color-box-fg: #171717;
+  --color-box-line: #d4d4d4;
+  /* Soft enough that the gallery is still legible behind the sheet — the
+     viewer should feel like it is sitting over the page, not replacing it. */
+  --lightbox-blur: 6px;
 
   /* Depth. Values from the 3D & Hyperrealism row of the design system, kept at
      the restrained end so the chrome still loses to the photographs. */
-  --perspective: 1000px;
-  --tilt-max: 4deg;
+  --perspective: 900px;
+  --tilt-max: 6deg;
   --shadow-frame:
     0 1px 2px rgb(0 0 0 / 0.05), 0 4px 8px rgb(0 0 0 / 0.05),
     0 12px 24px rgb(0 0 0 / 0.07), 0 24px 48px rgb(0 0 0 / 0.05);
@@ -40,8 +45,22 @@
     0 2px 4px rgb(0 0 0 / 0.06), 0 8px 16px rgb(0 0 0 / 0.08),
     0 20px 40px rgb(0 0 0 / 0.10), 0 40px 72px rgb(0 0 0 / 0.08);
 
-  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Fluid layout. One gutter, one tile gap and one type scale that slide with
+     the viewport instead of stepping at a media query — so a laptop at 80%
+     browser zoom (≈1890 CSS px) lands somewhere sensible on the same curve
+     rather than tripping a breakpoint meant for a 27" monitor. */
+  --gutter: clamp(1.5rem, 1rem + 2vw, 3rem);
+  --gap-tile: clamp(0.5rem, 0.25rem + 0.6vw, 1rem);
+  /* Cormorant has a small x-height, so these run ~10% larger than they would
+     for a grotesk to land at the same optical size. */
+  --text-display-hero: clamp(2.75rem, 1.75rem + 3.6vw, 4.5rem);
+  --text-display-1: clamp(2.5rem, 1.9rem + 1.9vw, 3.5rem);
+  --text-display-2: clamp(2.125rem, 1.8rem + 1.1vw, 2.5rem);
+  --text-display-3: clamp(1.75rem, 1.45rem + 1vw, 2.125rem);
+  --text-lead: clamp(1.125rem, 1rem + 0.4vw, 1.25rem);
 
   /* Spacious scale, density 3/10. Expressed through Tailwind's numeric spacing
      utilities rather than t-shirt tokens: naming these --spacing-md / --spacing-3xl
@@ -79,6 +98,13 @@
     0 32px 64px rgb(0 0 0 / 0.55);
 }
 
+/* The page container: full width minus a fluid gutter each side, capped at the
+   design's max. One rule instead of max-w + px + sm:px, so it never jumps. */
+@utility wrap {
+  width: min(100% - var(--gutter) * 2, 90rem);
+  margin-inline: auto;
+}
+
 @layer base {
   html {
     /* Sticky header must never obscure keyboard focus (WCAG 2.2 AA). */
@@ -104,8 +130,8 @@
   h4 {
     font-family: var(--font-display);
     font-weight: 500;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    letter-spacing: 0;
+    line-height: 1.05;
     text-wrap: balance;
     /* At large display sizes a single long word can be wider than a narrow
        column — especially at 200% text. break-word breaks only when a word
@@ -127,6 +153,16 @@
     border-radius: 2px;
   }
 
+  /* Form controls already draw a 1px border, so the 3px-offset ring above
+     reads as two rings. Pull the outline inward so it sits over the border
+     — one ring, on the control's own edge. Square, like the controls. */
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline-offset: -2px;
+    border-radius: 0;
+  }
+
   ::selection {
     background: var(--color-fg);
     color: var(--color-bg);
@@ -145,12 +181,15 @@
       box-shadow 320ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
       transform 320ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
     transform: perspective(var(--perspective)) rotateX(var(--tilt-x, 0deg))
-      rotateY(var(--tilt-y, 0deg)) translate3d(0, 0, 0);
+      rotateY(var(--tilt-y, 0deg)) scale(var(--tilt-scale, 1)) translate3d(0, 0, 0);
     will-change: transform;
   }
 
+  /* The lift: a raised shadow plus a 3% scale, both on hover so they release
+     together with the rotation when the pointer leaves. */
   [data-tilt]:hover .print-frame,
   [data-tilt]:focus-visible .print-frame {
+    --tilt-scale: 1.03;
     box-shadow: var(--shadow-frame-raised);
   }
 
@@ -163,6 +202,38 @@
       transition: box-shadow 200ms ease;
       will-change: auto;
     }
+  }
+
+  /* The lightbox sheet. Translucent white with the page blurred behind it,
+     so the photograph floats over a soft impression of where you were. */
+  .lightbox-backdrop {
+    background: rgb(255 255 255 / 0.62);
+    -webkit-backdrop-filter: blur(var(--lightbox-blur)) saturate(1.1);
+    backdrop-filter: blur(var(--lightbox-blur)) saturate(1.1);
+  }
+
+  /* Lazy-load blur-up. Until a photograph has decoded it is drawn blurred
+     over its own placeholder, then sharpens as it lands, instead of snapping
+     from a blur swatch to a finished print.
+
+     The pre-load blur only applies once ImageLoadReveal has flagged <html>,
+     which it does from the client after marking everything already decoded.
+     So with no JavaScript, or before it runs, nothing is ever blurred — the
+     effect can only ever add polish, never hold a picture back. The hero is
+     excluded outright: it is the LCP and gets no treatment at all. */
+  img.photo-img {
+    transition: filter 700ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  html[data-img-reveal] img.photo-img:not(.hero-parallax):not([data-loaded]) {
+    filter: blur(14px);
+  }
+
+  /* While the lightbox is open the sticky header would show through the
+     sheet (and its controls would sit under the dialog's). Hide it: the
+     dialog is modal, so nothing behind it should read as interactive. */
+  body[data-lightbox-open] > header {
+    visibility: hidden;
   }
 
   /* Theme switch. Knob position and icon are chosen here, not in React, so the
@@ -188,35 +259,200 @@
     transform: translateX(20px);
   }
 
-  /* Subtle scroll reveal — 350ms / power1.out equivalent, y 12px.
-     Never applied to the hero: the LCP image must not wait on a transition.
-
-     Hidden unconditionally here and forced visible by a <noscript> style block
-     in the layout, so content never depends on an observer having run. The class
-     is deliberately NOT toggled from script: mutating <html> before hydration
-     makes the server and client markup disagree. */
-  .reveal {
-    opacity: 0;
-    transform: translate3d(0, 12px, 0);
-    transition:
-      opacity 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-      transform 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* Header logo. Same CSS-only swap as the theme switch icons above, so the
+     markup never depends on client state and both logos are always in the DOM
+     — the black wordmark reads on the light chrome, the red mark on black. */
+  .logo-dark {
+    display: none;
   }
 
-  .reveal[data-shown="true"] {
+  :root[data-theme="dark"] .logo-dark {
+    display: block;
+  }
+
+  :root[data-theme="dark"] .logo-light {
+    display: none;
+  }
+
+  /* Scroll motion, driven entirely by the scroll position through native
+     scroll-driven animations — no observer, no listener, nothing to hydrate.
+
+     Both effects live inside two gates. prefers-reduced-motion: no-preference
+     means a visitor who has asked for less motion never sees them. @supports
+     means a browser without animation-timeline gets the plain, static page:
+     outside this block .reveal and .hero-parallax set nothing at all, so
+     content is simply visible. Nothing is ever hidden waiting for a script.
+
+     A view() timeline also cannot strand content: an element scrolled straight
+     past (deep link, restored scroll) is already at 100% of its range, so it
+     renders in its final state rather than waiting for a callback. */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      /* A settle: the frame arrives a touch large and eases down to true size
+         with a small rise, like a print being laid flat on the table. No fade
+         and no clipping — a photograph is never shown washed out or cut, so
+         wherever the scroll stops, what is on screen is a whole picture at
+         full strength, at worst a few percent larger than it will end up. */
+      .reveal {
+        animation: reveal-settle linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 30%;
+      }
+
+      /* The hero image drifts down at a fraction of scroll speed while the
+         banner scrolls out. It sits inside an overflow:clip wrapper and is
+         scaled 12% throughout, so the drift never uncovers an edge. */
+      .hero-parallax {
+        animation: hero-parallax linear both;
+        animation-timeline: view();
+        animation-range: exit 0% exit 100%;
+      }
+
+      /* …while the copy over it recedes the other way — up and out — so the
+         two layers separate like a title card lifting off a scene. */
+      .hero-copy {
+        animation: hero-copy-recede linear both;
+        animation-timeline: scroll();
+        animation-range: 0 420px;
+      }
+
+      /* Section headings track in from letter-spaced to set as they enter. */
+      .reveal :is(h1, h2),
+      h2.reveal {
+        animation: heading-track linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 40%;
+      }
+
+      /* The header compacts over the first 160px of scroll: less padding,
+         a smaller mark. Sticky, so it stays; compact, so it stays out of
+         the way of the photographs once you are reading. */
+      .header-bar {
+        animation: header-compact linear both;
+        animation-timeline: scroll();
+        animation-range: 0 160px;
+      }
+
+      .header-logo {
+        transform-origin: left center;
+        animation: header-logo linear both;
+        animation-timeline: scroll();
+        animation-range: 0 160px;
+      }
+
+      .scroll-progress {
+        animation: scroll-progress linear both;
+        animation-timeline: scroll();
+      }
+    }
+  }
+
+  /* Hidden (scale 0) unless the scroll timeline above is driving it, so a
+     browser without scroll-driven animations never shows a stuck hairline. */
+  .scroll-progress {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 45;
+    height: 2px;
+    background: var(--color-fg);
+    transform-origin: left center;
+    scale: 0 1;
+    pointer-events: none;
+  }
+}
+
+@keyframes hero-copy-recede {
+  from {
     opacity: 1;
-    transform: none;
+    translate: 0 0;
+  }
+  to {
+    opacity: 0;
+    translate: 0 -48px;
+  }
+}
+
+@keyframes heading-track {
+  from {
+    letter-spacing: 0.08em;
+  }
+  to {
+    letter-spacing: 0;
+  }
+}
+
+@keyframes header-compact {
+  from {
+    padding-block: 1rem;
+  }
+  to {
+    padding-block: 0.5rem;
+  }
+}
+
+@keyframes header-logo {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 0.78;
+  }
+}
+
+@keyframes scroll-progress {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+
+@keyframes reveal-settle {
+  from {
+    scale: 1.03;
+    translate: 0 14px;
+  }
+  to {
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+/* Hero copy settles in on load: each line rises a beat after the last.
+   Time-based, not scroll-based — the hero is already in view. The image is
+   untouched, so the LCP paint waits on nothing. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-in {
+    animation: hero-in 800ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 110ms + 120ms);
+  }
+}
+
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes hero-parallax {
+  from {
+    translate: 0 0;
+    scale: 1.12;
+  }
+  to {
+    translate: 0 14%;
+    scale: 1.12;
   }
 }
 
 /* Reduced motion: render every final state immediately, cancel all transitions. */
 @media (prefers-reduced-motion: reduce) {
-  .reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-
   *,
   *::before,
   *::after {

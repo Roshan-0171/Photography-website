@@ -1,7 +1,19 @@
 /** Shape of one entry in photos.generated.ts. */
 export type GeneratedPhoto = {
   id: string;
-  category: "portrait" | "editorial" | "wedding" | "personal" | "hero" | "about";
+  category:
+    | "wedding"
+    | "proposal"
+    | "maternity"
+    | "pasni"
+    | "graduation"
+    | "cultural"
+    | "concert"
+    | "events"
+    | "halloween"
+    | "pets"
+    | "hero"
+    | "about";
   /** Intrinsic pixel dimensions, read from the original file — never hand-entered. */
   width: number;
   height: number;
@@ -27,4 +39,17 @@ export type GeneratedPhoto = {
    * layout reads correctly with no photograph flagged at all.
    */
   featured?: boolean;
+  /**
+   * Sort position within its category's gallery, lowest first. Set it in
+   * photo-text.json. Unset (null) photographs sort after every ordered one,
+   * in their default alphabetical-by-file order.
+   */
+  order: number | null;
+  /**
+   * Position in the home page's curated selection. Set it in photo-text.json;
+   * null means the photograph does not appear on the home page. Selected
+   * photographs are split into the portrait-shaped and landscape-shaped grids
+   * by their own aspect ratio, each keeping this order.
+   */
+  home: number | null;
 };

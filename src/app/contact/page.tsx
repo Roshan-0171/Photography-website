@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
-import { Clock, Mail, MapPin, Phone } from "lucide-react";
+import { Clock, Mail, MapPin, MessageCircle } from "lucide-react";
 
 import InquiryForm from "@/components/InquiryForm";
+import Picture from "@/components/Picture";
 import { site } from "@/data/site";
+import { selfPortrait } from "@/data/photos";
 import { SHOOT_TYPES } from "@/data/inquiry";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: `Enquire about a portrait, family or editorial shoot with ${site.name} in Kathmandu.`,
+  description: `Enquire about a portrait, family, editorial or wedding photography and videography session with ${site.name}.`,
 };
 
 /** Services page deep-links carry ?package=… — map it onto a shoot type. */
@@ -23,22 +25,32 @@ export default async function ContactPage({ searchParams }: PageProps<"/contact"
   const defaultShootType = raw ? (PACKAGE_TO_TYPE[raw] ?? "") : "";
 
   return (
-    <div className="mx-auto max-w-[90rem] px-6 py-12 sm:px-8 sm:py-16">
+    <div className="wrap py-12 sm:py-16">
       <div className="grid gap-16 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)]">
         <div className="min-w-0">
-          <h1 className="text-4xl sm:text-5xl">Start an enquiry</h1>
+          <h1 className="text-display-1">Start an enquiry</h1>
           <p className="mt-6 max-w-prose text-lg text-muted-fg">
-            Six fields. I read them all myself and reply within two working
+            Seven fields. I read them all myself and reply within two working
             days — including when the answer is that I&rsquo;m not the right
-            photographer for what you have in mind.
+            photographer or videographer for what you have in mind.
           </p>
 
-          <div className="mt-16">
+          <div className="mt-10">
             <InquiryForm defaultShootType={defaultShootType} />
           </div>
         </div>
 
         <aside className="min-w-0 lg:border-l lg:border-line lg:pl-12">
+          {selfPortrait && (
+            <span className="print-frame mb-10 block max-w-[14rem] p-2">
+              <Picture
+                photo={selfPortrait}
+                sizes="224px"
+                className="bg-muted"
+              />
+            </span>
+          )}
+
           <h2 className="text-xs uppercase tracking-[0.14em] text-muted-fg">
             Or reach me directly
           </h2>
@@ -50,25 +62,23 @@ export default async function ContactPage({ searchParams }: PageProps<"/contact"
               </a>
             </li>
             <li className="flex min-w-0 items-start gap-2">
-              <Phone className="mt-1 size-4 shrink-0 text-muted-fg" aria-hidden="true" />
-              <a
-                href={`tel:${site.phone.replace(/\s/g, "")}`}
-                className="inline-block min-w-0 [overflow-wrap:anywhere] py-2 underline-offset-4 hover:underline"
-              >
-                {site.phone}
-              </a>
-            </li>
-            <li className="flex min-w-0 items-start gap-2">
               <MapPin className="mt-1 size-4 shrink-0 text-muted-fg" aria-hidden="true" />
-              <span>{site.studio}</span>
-            </li>
-            <li className="flex min-w-0 items-start gap-2">
-              <Clock className="mt-1 size-4 shrink-0 text-muted-fg" aria-hidden="true" />
-              <span>
-                Sunday to Friday, 9am–6pm NPT. Shoots run on Saturdays too.
-              </span>
+              <span>{site.location}</span>
             </li>
           </ul>
+
+          {/* Opens a DM thread directly — https://ig.me/m/<username> — rather
+              than just the profile, so a visitor who'd rather not fill in the
+              form has a one-tap way to reach out instead. */}
+          <a
+            href={site.instagramDm}
+            rel="noopener noreferrer"
+            target="_blank"
+            className="mt-8 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 border border-fg px-5 py-3 text-sm text-fg transition-colors duration-200 hover:bg-fg hover:text-bg sm:w-auto"
+          >
+            <MessageCircle className="size-4" aria-hidden="true" />
+            Message me on Instagram
+          </a>
 
           <h2 className="mt-16 text-xs uppercase tracking-[0.14em] text-muted-fg">
             What happens next

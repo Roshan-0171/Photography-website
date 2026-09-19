@@ -48,16 +48,16 @@ export const SHOOT_TYPES = [
 ] as const;
 
 export const BUDGETS = [
-  "Under NPR 20,000",
-  "NPR 20,000 – 35,000",
-  "NPR 35,000 – 60,000",
-  "NPR 60,000 and above",
+  "Under 1,000$", 
+  "1,000$ – 5,000$",
+  "5,000$ and above",
   "Not sure yet",
 ] as const;
 
 export const FIELD_LABELS: Record<string, string> = {
   name: "Your name",
   email: "Email",
+  phone: "Phone number",
   shootType: "Kind of shoot",
   date: "Preferred date",
   budget: "Budget range",

@@ -42,19 +42,20 @@ for (const statement of SCHEMA.split(";").map((s) => s.trim()).filter(Boolean)) 
 console.log(ok("  schema is idempotent (safe on every cold start)"));
 
 const rows = await db.query(INSERT, [
-  "Anita Rai", "anita@example.com", "Portrait sitting",
+  "Anita Rai", "anita@example.com", "+977 980 000 1111", "Portrait sitting",
   "2026-10-17", false, "NPR 20,000 – 35,000",
   "A portrait for a book jacket.", "203.0.113.9",
 ]);
 const id = rows.rows[0].id;
 console.log(ok(`  insert returns id ${id}`));
 
-// A flexible enquiry has no date at all — the column must accept null.
+// A flexible enquiry has no date, and phone is optional — both columns must
+// accept null.
 const r2 = await db.query(INSERT, [
-  "Bikash Thapa", "bikash@example.com", "Editorial / commercial",
+  "Bikash Thapa", "bikash@example.com", null, "Editorial / commercial",
   null, true, "Not sure yet", "A feature on valley potters.", null,
 ]);
-console.log(ok(`  null date and null ip accepted (id ${r2.rows[0].id})`));
+console.log(ok(`  null date, null phone and null ip accepted (id ${r2.rows[0].id})`));
 
 await db.query(MARK, [id, true, false]);
 const after = await db.query("select notified, confirmed from inquiries where id = $1", [id]);
@@ -65,7 +66,7 @@ console.log(ok(`  recent returns ${recent.rows.length}, newest first: ${recent.r
 
 // Parameterised throughout — this must be stored, never executed.
 const nasty = "Robert'); drop table inquiries;--";
-await db.query(INSERT, [nasty, "x@example.com", "Something else", null, false, "Not sure yet", "hello there", null]);
+await db.query(INSERT, [nasty, "x@example.com", null, "Something else", null, false, "Not sure yet", "hello there", null]);
 const still = await db.query("select count(*)::int as n from inquiries");
 const stored = await db.query("select name from inquiries order by id desc limit 1");
 console.log(ok(`  injection attempt stored as data, table intact (${still.rows[0].n} rows)`));

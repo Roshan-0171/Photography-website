@@ -13,7 +13,13 @@ import { useEffect, useRef } from "react";
  * limit, the easing and the reduced-motion and coarse-pointer opt-outs all live
  * in one place in the stylesheet.
  */
-export default function Tilt({ children }: { children: React.ReactNode }) {
+export default function Tilt({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -57,7 +63,7 @@ export default function Tilt({ children }: { children: React.ReactNode }) {
       const r = tile.getBoundingClientRect();
       // −1..1 from the centre, then scaled by the max angle set in CSS.
       const max = parseFloat(
-        getComputedStyle(tile).getPropertyValue("--tilt-max") || "4",
+        getComputedStyle(tile).getPropertyValue("--tilt-max") || "6",
       );
       const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
       const ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
@@ -81,5 +87,9 @@ export default function Tilt({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  return <div ref={ref}>{children}</div>;
+  return (
+    <div ref={ref} className={className}>
+      {children}
+    </div>
+  );
 }
