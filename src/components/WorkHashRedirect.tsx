@@ -3,9 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-import { categories } from "@/data/photos";
-
-const VALID = new Set<string>(categories.map((c) => c.id));
+import { workGroupFor } from "@/data/photos";
 
 /**
  * Old links point at /work#portrait etc. — anchors from before this page
@@ -25,7 +23,8 @@ export default function WorkHashRedirect() {
 
   useEffect(() => {
     const id = window.location.hash.replace("#", "");
-    if (VALID.has(id)) router.replace(`/work?type=${id}`);
+    const group = workGroupFor(id);
+    if (group) router.replace(`/galleries/${group}`);
   }, [router]);
 
   return null;

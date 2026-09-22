@@ -14,13 +14,13 @@
 export const site = {
   name: "Roh Portraits",
   role: "Photographer & Videographer",
-  city: "Texas, USA",
+  city: "Dallas–Fort Worth, Texas",
   /** The slogan — the hero headline's second line and the footer's. */
   tagline: "Turning moments into memories",
   /** One full sentence for search results and link previews, where a
    *  four-word slogan on its own says too little. */
   description:
-    "Portrait, wedding and editorial photography and videography — based in Texas, available to travel nationwide.",
+    "Portrait, wedding and editorial photography and videography — based in Dallas–Fort Worth, Texas, available to travel nationwide.",
 
   // Published in the footer, on /contact, in the JSON-LD, and it is what a
   // visitor is told to write to when an enquiry fails to send.
@@ -28,7 +28,7 @@ export const site = {
 
   // No fixed studio address is published — the business is travel-based.
   // Shown on /contact, in /story, and in the confirmation email signature.
-  location: "Texas, USA — open to travel nationwide",
+  location: "Dallas–Fort Worth, Texas — available to travel nationwide",
 
   instagram: "https://instagram.com/roh_portraits",
 
@@ -51,7 +51,7 @@ export const site = {
 
 export const nav = [
   { href: "/home", label: "Home" },
-  { href: "/work", label: "Work" },
+  { href: "/galleries", label: "Galleries" },
   { href: "/story", label: "Story" },
   // { href: "/services", label: "Services" },
   { href: "/contact", label: "Contact" },

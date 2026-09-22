@@ -101,7 +101,8 @@
 /* The page container: full width minus a fluid gutter each side, capped at the
    design's max. One rule instead of max-w + px + sm:px, so it never jumps. */
 @utility wrap {
-  width: min(100% - var(--gutter) * 2, 90rem);
+  width: min(calc(100% - var(--gutter) * 2), 90rem);
+  max-width: 100%;
   margin-inline: auto;
 }
 
@@ -122,6 +123,7 @@
     font-size: 1rem;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
   }
 
   h1,
@@ -289,10 +291,7 @@
   @media (prefers-reduced-motion: no-preference) {
     @supports (animation-timeline: view()) {
       /* A settle: the frame arrives a touch large and eases down to true size
-         with a small rise, like a print being laid flat on the table. No fade
-         and no clipping — a photograph is never shown washed out or cut, so
-         wherever the scroll stops, what is on screen is a whole picture at
-         full strength, at worst a few percent larger than it will end up. */
+        with a small rise, like a print being laid flat on the table. */
       .reveal {
         animation: reveal-settle linear both;
         animation-timeline: view();
@@ -410,12 +409,14 @@
 
 @keyframes reveal-settle {
   from {
-    scale: 1.03;
-    translate: 0 14px;
+    scale: 1.04;
+    translate: 0 24px;
+    rotate: -0.6deg;
   }
   to {
     scale: 1;
     translate: 0 0;
+    rotate: 0deg;
   }
 }
 

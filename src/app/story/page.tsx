@@ -1,10 +1,9 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { ArrowRight, ArrowUpRight, Camera, Clock, Handshake } from "lucide-react";
 
-import Picture from "@/components/Picture";
 import Reveal from "@/components/Reveal";
-import { selfPortrait } from "@/data/photos";
 import { testimonials } from "@/data/testimonials";
 import { site } from "@/data/site";
 
@@ -34,59 +33,57 @@ const approach = [
 export default function StoryPage() {
   return (
     <div className="wrap py-12 sm:py-16">
-      <div
-        className={
-          selfPortrait
-            ? "grid gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16"
-            : "grid gap-12"
-        }
-      >
-        {selfPortrait && (
-          <div className="min-w-0 lg:order-2">
-            <Picture
-              photo={selfPortrait}
-              priority
-              sizes="(min-width: 1024px) 45vw, 100vw"
-              className="bg-muted"
-            />
-          </div>
-        )}
+      <div className="grid gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16">
+        <div className="min-w-0 lg:order-2">
+          <Image
+            src="/photos/about/roh-portrait.webp"
+            alt="Rohit Shrestha, photographer and filmmaker"
+            width={640}
+            height={640}
+            className="h-auto w-full bg-muted"
+            priority
+          />
+        </div>
 
         <div className="min-w-0 lg:order-1">
           <p className="text-xs uppercase tracking-[0.18em] text-muted-fg">
             About
           </p>
-          <h1 className="mt-6 text-display-1">
-            I photograph people where they already are.
+          <h1 className="mt-6 inline-flex items-center gap-4 text-display-1">
+            I Shoot People
+            <Camera className="size-[0.7em] shrink-0" aria-hidden="true" />
           </h1>
 
           <div className="mt-8 max-w-prose space-y-6 text-lg leading-relaxed text-secondary">
             <p>
-              I&rsquo;m Rohit Shrestha, and {site.name} is the name I work
-              under. Wedding and event photography and video, based in{" "}
-              {site.city}, and happy to travel for it.
+              Photography started as a way for me to capture moments, but over
+              time, it became something much more meaningful — a way to tell
+              stories.
             </p>
             <p>
-              Most of what I shoot is the wedding day and everything around
-              it: the vows, the reception, the families who flew in for it, the
-              groom pulling up in style. A good deal of it is Nepali weddings
-              and celebrations, where everyone turns up dressed in culture and
-              the family portrait is the one that matters most. I also cover
-              the days on either side of the ceremony, and the events that
-              follow &mdash; engagements, receptions, birthdays, anniversaries,
-              the milestones a family wants on record.
+              I&rsquo;m Roh, a photographer and filmmaker based in Texas. I&rsquo;m
+              drawn to genuine emotions, natural moments, beautiful details,
+              and the energy that makes every person and celebration unique.
             </p>
             <p>
-              I film as well as photograph, so a day can come back as stills, a
-              short film, or both. The ceremony in full, the speeches, the parts
-              people miss while they&rsquo;re busy living them.
+              From weddings and cultural celebrations to portraits, concerts,
+              graduations, and everyday milestones, I love being there to
+              document the moments that often happen between the planned ones
+              — the laughter, the excitement, the quiet moments, and everything
+              in between.
             </p>
             <p>
-              Alongside the events: family and individual portraits, usually at
-              home, at work, or somewhere that means something to the person in
-              front of the camera. And personal work from wherever I&rsquo;ve
-              travelled, most recently the coastline at Big Sur. That last
-              category pays nothing and is the reason I do the rest.
+              My approach is simple: I want my photographs to feel real. I want
+              you to look back at them years from now and remember not only how
+              the moment looked, but how it felt.
+            </p>
+            <p>
+              For me, photography isn&rsquo;t just about creating beautiful images.
+              It&rsquo;s about creating something you can come back to.
+            </p>
+            <p>
+              Your moments. Your story. Your memories — captured the way they
+              feel.
             </p>
           </div>
         </div>

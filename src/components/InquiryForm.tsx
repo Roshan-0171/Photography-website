@@ -1,11 +1,14 @@
 "use client";
 
+import Script from "next/script";
 import { useActionState, useEffect, useId, useRef, useState } from "react";
 import { CircleAlert, CircleCheck, TriangleAlert } from "lucide-react";
 
 import { submitInquiry } from "@/app/contact/actions";
 import { BUDGETS, FIELD_LABELS, SHOOT_TYPES, emptyInquiry } from "@/data/inquiry";
 import { site } from "@/data/site";
+
+const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 function FieldLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
@@ -27,6 +30,7 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 
 export default function InquiryForm({ defaultShootType = "" }: { defaultShootType?: string }) {
   const [state, formAction, pending] = useActionState(submitInquiry, emptyInquiry);
+  const [formStartedAt, setFormStartedAt] = useState(0);
   const [values, setValues] = useState<Record<string, string>>({
     name: "",
     email: "",
@@ -133,7 +137,19 @@ export default function InquiryForm({ defaultShootType = "" }: { defaultShootTyp
   });
 
   return (
-    <form ref={formRef} action={formAction} noValidate className="@container max-w-2xl">
+    <>
+      {turnstileSiteKey && (
+        <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+      )}
+      <form
+      ref={formRef}
+      action={formAction}
+      noValidate
+      onFocusCapture={() => {
+        if (!formStartedAt) setFormStartedAt(Date.now());
+      }}
+      className="@container max-w-2xl"
+    >
       {state.status === "failed" && (
         <div
           ref={failedRef}
@@ -314,6 +330,13 @@ export default function InquiryForm({ defaultShootType = "" }: { defaultShootTyp
         <label htmlFor={id("company")}>Company (leave blank)</label>
         <input id={id("company")} name="company" type="text" tabIndex={-1} autoComplete="off" />
       </div>
+      <input type="hidden" name="formStartedAt" value={formStartedAt || ""} />
+
+      {turnstileSiteKey && (
+        <div className="mt-8" aria-label="Security check">
+          <div className="cf-turnstile" data-sitekey={turnstileSiteKey} />
+        </div>
+      )}
 
       <button
         type="submit"
@@ -322,6 +345,7 @@ export default function InquiryForm({ defaultShootType = "" }: { defaultShootTyp
       >
         {pending ? "Sending…" : "Send enquiry"}
       </button>
-    </form>
+      </form>
+    </>
   );
 }

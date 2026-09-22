@@ -3,6 +3,7 @@ import type { GeneratedPhoto } from "./photo-types";
 
 export type Photo = GeneratedPhoto;
 export type Category = Exclude<Photo["category"], "hero" | "about">;
+export type WorkGroupId = "weddings-couples" | "portraits" | "cultural" | "events" | "personal";
 
 /**
  * The galleries, in the order they appear on /work. Each id matches an entry
@@ -63,6 +64,45 @@ export const categories: { id: Category; label: string; blurb: string }[] = [
   },
 ];
 
+/** The smaller set of categories shown in portfolio navigation and URLs. */
+export const workGroups: {
+  id: WorkGroupId;
+  label: string;
+  blurb: string;
+  categories: Category[];
+}[] = [
+  {
+    id: "weddings-couples",
+    label: "Weddings & Couples",
+    blurb: "Wedding days, proposals, and the people at the centre of them.",
+    categories: ["wedding", "proposal"],
+  },
+  {
+    id: "portraits",
+    label: "Portraits",
+    blurb: "Portraits for the seasons, milestones, and people worth remembering.",
+    categories: ["maternity", "graduation"],
+  },
+  {
+    id: "cultural",
+    label: "Cultural",
+    blurb: "Pasni, cultural celebrations, and traditions held close.",
+    categories: ["pasni", "cultural"],
+  },
+  {
+    id: "events",
+    label: "Events",
+    blurb: "Concerts, outdoor gatherings, and celebrations as they unfold.",
+    categories: ["concert", "events", "halloween"],
+  },
+  {
+    id: "personal",
+    label: "Personal",
+    blurb: "Creative work and the other members of the family.",
+    categories: ["pets"],
+  },
+];
+
 const GALLERY: Category[] = categories.map((c) => c.id);
 
 /**
@@ -101,6 +141,21 @@ export const photos: Photo[] = generatedPhotos.filter((p) =>
 );
 
 export const byCategory = (c: Category) => photos.filter((p) => p.category === c).sort(byOrder);
+
+export const byWorkGroup = (id: WorkGroupId) => {
+  const group = workGroups.find((item) => item.id === id);
+  return group
+    ? photos
+        .filter((photo) => group.categories.includes(photo.category as Category))
+        .sort(byOrder)
+    : [];
+};
+
+export const workGroupFor = (value: string): WorkGroupId | null => {
+  const direct = workGroups.find((group) => group.id === value);
+  if (direct) return direct.id;
+  return workGroups.find((group) => group.categories.includes(value as Category))?.id ?? null;
+};
 
 /**
  * The home page's curated selection, drawn across every gallery. The

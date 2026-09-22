@@ -51,7 +51,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "A bride and groom kiss under a sheer red veil held over both their heads outdoors.",
     caption: "",
     order: null,
-    home: 3,
+    home: 7,
     blurDataURL: "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAQBACdASoQABgAPu1kqU2ppaQiMAgBMB2JbAC7ACHUhgbUdkVZ4pWlpAD+7Xv3qjdoY+7YxgVMjnSA1hQBFRZ70P7D9/d69pN4jtkNV2H6EMGMhB924JrPtZtpjalyGJZ7k4/g0/a7+OxAAAA=",
   },
   {
@@ -67,7 +67,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "A bride and groom in red and white wedding attire smile at each other under a fluttering red canopy.",
     caption: "",
     order: null,
-    home: 4,
+    home: null,
     blurDataURL: "data:image/webp;base64,UklGRlAAAABXRUJQVlA4IEQAAADwAQCdASoQAAsAA4BaJbACdAENstlJ/AAA+/x0+jTMP81eVIAfczonH/G/AiY1HirPTfSyvjwTn/0n98Mxh+4Fisv0AA==",
   },
   {
@@ -83,7 +83,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "A smiling bride in a red veil and gold jewelry looks up at the groom beside her.",
     caption: "",
     order: null,
-    home: 5,
+    home: 3,
     blurDataURL: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAABQBACdASoQABgAPu1kqk4ppaQiMAgBMB2JbACxGwAByzhHwatJCgFivh4AAP7uiG1XsLETfw3A//SWqzk5w+8NMDug0zdyjCluIY3eGLFSlcj96Ee9CLexQ0aBSxPRD8AZy4FoAAA=",
   },
   {
@@ -99,7 +99,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "Bridesmaids in cream and red saris surround a laughing bride in a red and gold outfit under a tree.",
     caption: "",
     order: null,
-    home: 6,
+    home: null,
     blurDataURL: "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAABQBACdASoQABgAPu1mq04ppaQiMAgBMB2JYgCdMoAKRreEjPjX5G8zCt+AAP78alcCoxAMqiLX+LlXrwmgmam5p2qtjOgm4lrLKaUqkL7KYy991DExe1QcQ0FzICdfo2s+NYSkcq3lhNwjsAA=",
   },
   {
@@ -323,7 +323,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "A bride in red and a groom in white and maroon walk hand in hand down a petal-strewn aisle lined with white floral arches.",
     caption: "",
     order: null,
-    home: null,
+    home: 4,
     blurDataURL: "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAABwBACdASoQABgAPu1iqk2ppaQiMAgBMB2JaACdMoR3AIJH0OhX1KN62Rx6QAD++YQXkFh+MGFxbBn08UoZymaTpVS3IomamO1oBWNbN0d8YMyXHcP942oR1Dy+bakH4rf8J3LFSmr17zEAAAA=",
   },
   {
@@ -355,7 +355,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "A bride in a red embroidered saree and a groom in white with a red sash smile at each other in a garden.",
     caption: "",
     order: null,
-    home: null,
+    home: 5,
     blurDataURL: "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAADQAwCdASoQABgALrV2u12jqampiYC0SgCdAEXfpUTT/5LpeTfQaAAA/t2NNfDHFGlabojYwERr9nov4+VQF2wwUg8Hb2Ft8CSkdu/OFdS8dDMfAhnlWL2bYrAAAA==",
   },
   {
@@ -566,7 +566,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 21,
     blurDataURL: "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAADQAwCdASoQABgAPu1iqk2ppaQiMAgBMB2JYwCdIKnBXfdthgT2NwAA7rYyB/y4ZLxBxFdHJAwKXmrTPHkzbhcTR0qnZBMNZrpM936GtLqRPGb034/aPQAA",
   },
   {
@@ -583,7 +583,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 9,
     blurDataURL: "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAABQBACdASoQABgAPu1kq04ppaQiMAgBMB2JYwC06CP/5FBm5C2obd4mVzz0AP7gtHXvFtfTNC/kie8iK2hIt/uPVDIdE9pWuPBbTwTQXMjVnL6lLAAueg8erAehdZoAAAA=",
   },
   {
@@ -600,7 +600,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 19,
     blurDataURL: "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADQAwCdASoQABgAPu1krU2ppaSiMAgBMB2JZwAAUrW5aWoH9gJbxxAA/sWDiqB+J3e/Y1Tjm71Nj/ZZIpXgfdNhj/+U0tDhY+ePkM+Di7lVsWzrDukthkszQAA=",
   },
   {
@@ -700,7 +700,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "A bride in a red lehenga and a groom in a dark suit hold hands and smile at each other under an ornate white gazebo.",
     caption: "",
     order: null,
-    home: null,
+    home: 10,
     blurDataURL: "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAABwBACdASoQABgAPu1kq04ppaQiMAgBMB2JZgCdMoR3AB4e9+eqH4stTx/pAAD+w2ZRHvD5vf2xuz7xin3V7pwu0SAY+Z8J8ERHm+TUXF/aff1LXx7tiW6adorBzIAA",
   },
   {
@@ -869,7 +869,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 6,
     blurDataURL: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAAAwBACdASoQABgAPu1iqk4ppaQiMAgBMB2JbACdMoAC9IvmPPgc5wemxAAA+NYyteKpaX3NmsWY+GdJjJqBl3oh9VAhE97bSgg6+39RDXS5S4hXmID+yEhAgM63I7FUuzyb2DTe5mwRJAAA",
   },
   {
@@ -886,7 +886,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 11,
     blurDataURL: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAABwBACdASoQABgAPu1iqk4ppaQiMAgBMB2JagCdIDZDA4ODD4M7UeomCDGYgAD+1u2NOBxQ2DMbH5fA8jf6FiWX57qjGcg07PqDGpCUZezHUxYb2/DElhEpAQ4ThS6Hkh10iHO4ER4AAA==",
   },
   {
@@ -954,7 +954,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 20,
     blurDataURL: "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAADQAwCdASoQABgAPu1iqU2ppaOiMAgBMB2JagCdABRvn/GBmyzdzEwA/eniWj9/NEgFvK2UB0Hk8iUbzL6WOJ6w/VFo3FuJystrzwKT9f/5/94F0Hq4d/8uTPEoRkJzgAA=",
   },
   {
@@ -1018,29 +1018,11 @@ export const generatedPhotos: GeneratedPhoto[] = [
     base: "/photos/proposal/roh08699-2",
     title: "Roh08699 2",
     year: null,
-    // TODO: write alt text for this photograph in src/data/photo-text.json
     alt: "",
     caption: "",
     order: null,
     home: null,
     blurDataURL: "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAAAQBACdASoQABcAPu1kq04ppaQiMAgBMB2JZQCdABozD8bBsoH3bWf4AAD+6/9GJveG0xOuc2M5ffnjCAoiW3SzRlgHS895JkXcTiiBSJWWWWukU+AAAA==",
-  },
-  {
-    id: "roh08699",
-    category: "proposal",
-    width: 5407,
-    height: 3605,
-    aspectRatio: 1.4999,
-    widths: [400, 600, 800, 1200, 1600, 2000],
-    base: "/photos/proposal/roh08699",
-    title: "Roh08699",
-    year: null,
-    // TODO: write alt text for this photograph in src/data/photo-text.json
-    alt: "",
-    caption: "",
-    order: null,
-    home: null,
-    blurDataURL: "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAADQAQCdASoQAAsAA4BaJYwCdADwEGNdWAD+8rNHFW8273l7jE2vSjWTBztSJaDu/uxVzcewAAA=",
   },
   {
     id: "ro400079",
@@ -1056,7 +1038,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 13,
     blurDataURL: "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADwAwCdASoQABgAPu1iqU2ppaOiMAgBMB2JZgCw7BukbGoqNdLh06gMAP28LzP79rBWA/OYptx2a//pEg6cbhtNz62E/9pIf0NFamlDtAWxZ63ZYVNEamb4AAA=",
   },
   {
@@ -1158,7 +1140,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 16,
     blurDataURL: "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAQBACdASoQABgAPu1mqk4ppaOiMAgBMB2JQBadAxvAUqKVIK/gJJTUAAD+5/Pucbd5nDhjev9DXBnih0Iw3edsaolkkOZHrLkB8kDXXLoPJVPEJJxoSrpyM3TmWNDF1EDAAA==",
   },
   {
@@ -1192,7 +1174,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 17,
     blurDataURL: "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAwBACdASoQABgAPu1kq04ppaQiMAgBMB2JYgCdMoACLeDFdp72TIEsGAAA/u1hdexalcLTEWcMhYq3WeCtuY3AYZkxBHcrhpDZ7WfPEtRfbxShfpAhL5zq/hcBRNzvQYAAAA==",
   },
   {
@@ -1549,7 +1531,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 24,
     blurDataURL: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAwBACdASoQABgAPu1kqU2ppaQiMAgBMB2JbACdMoAC/JNcxZqnMIb0l6AA/Z9P7QVGxOh3H79QZDPCRHY0UtPAnXB6iB43QIutsJ+oCn0XpEaml4r7g53YZUHYT8yp9Ca/E9A3D1EzdTbxPEhfkAAA",
   },
   {
@@ -1702,7 +1684,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 18,
     blurDataURL: "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAAAwBACdASoQABgAPu1kqU2ppaOiMAgBMB2JbACsACHhhiO1l50TfWOL1oAA/tcLeDEfLjznIjyiacFVixMwsgevCcjdDiauvvBVoL9D51L+Jr2QlK4fEe+E/bR+uO0kki/soO/TJXqEbhqt7XDbJqAAAAA=",
   },
   {
@@ -1940,7 +1922,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 14,
     blurDataURL: "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAADwAwCdASoQABgAPu1iqU2ppaOiMAgBMB2JagCdMoABKjANjgBrzkYIANyHv6aukuISYH9zsf/P15Sf8tb9cDZmttj46iyptTC7lhtmdTJek2j6cnM3CM0WsjKAVx8AAAA=",
   },
   {
@@ -2025,7 +2007,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 12,
     blurDataURL: "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAACwAwCdASoQABgAPu1iqk4ppaQiMAgBMB2JQBdgBCoDgWG7ORlLwAD+7ohfmkAbtedB1Kq2Pq/bKoGZPe5AZqoL0cZaMmgH0ID4aRkMbNiAAA==",
   },
   {
@@ -2093,7 +2075,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 23,
     blurDataURL: "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAABQBACdASoQABgAPu1krU6ppaSiMAgBMB2JbACdMoR3ACn9Eidy+hoW5wSAAPiL0Tc5t4JorfnWu6jv9CXHIlHkgah/bFJ2ODyfV6H24hW0qrvwY6Y7/2EVCo0AAA==",
   },
   {
@@ -2110,7 +2092,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 22,
     blurDataURL: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAACQAwCdASoQABsALrV2u12jqampiYC0SgCo9EObp1ttVcHI4MZ4AP7zeJJqvEzeIwtCgqNQS2Zmvjv6xGujJ587J6P/E718deNwV8Mec17QSGht+rrvlANehWiQKVwstnMpR1fAgAA=",
   },
   {
@@ -2144,7 +2126,7 @@ export const generatedPhotos: GeneratedPhoto[] = [
     alt: "",
     caption: "",
     order: null,
-    home: null,
+    home: 15,
     blurDataURL: "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAACQBACdASoQABgAPu1iqU2ppaOiMAgBMB2JbACdMoR3ACUYpWcLimQONOnTnQAA/vHXvEL5os0ckydT4qNcYCabSYpb8SAySfMXqlnFtFWG/vwRiNl69rnLzGndhb4GKiAPtEG0bNJv2SxUMEDUJ958zQf4doBY9oAAAA==",
   },
   {

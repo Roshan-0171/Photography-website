@@ -14,7 +14,11 @@ const nextConfig: NextConfig = {
   // The front page lives at /home; / is kept working as a permanent redirect
   // so old links and bookmarks never 404.
   async redirects() {
-    return [{ source: "/", destination: "/home", permanent: true }];
+    return [
+      { source: "/", destination: "/home", permanent: true },
+      { source: "/work", destination: "/galleries", permanent: true },
+      { source: "/work/:category", destination: "/galleries/:category", permanent: true },
+    ];
   },
 };
 

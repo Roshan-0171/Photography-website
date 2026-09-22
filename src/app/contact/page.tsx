@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Clock, Mail, MapPin, MessageCircle } from "lucide-react";
+import { Mail, MapPin, MessageCircle } from "lucide-react";
 
 import InquiryForm from "@/components/InquiryForm";
 import Picture from "@/components/Picture";
@@ -55,15 +55,19 @@ export default async function ContactPage({ searchParams }: PageProps<"/contact"
             Or reach me directly
           </h2>
           <ul className="mt-6 space-y-6">
-            <li className="flex min-w-0 items-start gap-2">
-              <Mail className="mt-1 size-4 shrink-0 text-muted-fg" aria-hidden="true" />
-              <a href={`mailto:${site.email}`} className="inline-block min-w-0 [overflow-wrap:anywhere] py-2 underline-offset-4 hover:underline">
+            <li className="flex min-w-0 items-start gap-3">
+              <span className="flex size-6 shrink-0 items-center justify-center">
+                <Mail className="size-5 text-muted-fg" aria-hidden="true" />
+              </span>
+              <a href={`mailto:${site.email}`} className="min-w-0 [overflow-wrap:anywhere] py-0.5 text-base leading-snug underline-offset-4 hover:underline">
                 {site.email}
               </a>
             </li>
-            <li className="flex min-w-0 items-start gap-2">
-              <MapPin className="mt-1 size-4 shrink-0 text-muted-fg" aria-hidden="true" />
-              <span>{site.location}</span>
+            <li className="flex min-w-0 items-start gap-3">
+              <span className="flex size-6 shrink-0 items-center justify-center">
+                <MapPin className="size-5 text-muted-fg" aria-hidden="true" />
+              </span>
+              <span className="min-w-0 py-0.5 text-base leading-snug">{site.location}</span>
             </li>
           </ul>
 

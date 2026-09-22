@@ -39,7 +39,7 @@ const handle = `@${site.instagram.replace(/\/+$/, "").split("/").pop()}`;
  */
 export default function SiteFooter() {
   return (
-    <footer className="mt-16 border-t border-line">
+    <footer className="border-t border-line">
       <div className="wrap grid gap-8 py-8 md:grid-cols-[1.5fr_1fr]">
         <div>
           <Link href="/home" className="inline-flex">

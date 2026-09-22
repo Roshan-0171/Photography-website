@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CircleAlert, LogOut } from "lucide-react";
 
@@ -56,15 +57,23 @@ export default async function EnquiriesPage({ searchParams }: PageProps<"/admin/
     <div className="wrap py-16">
       <div className="flex flex-wrap items-baseline justify-between gap-6">
         <h1 className="text-display-2">Enquiries</h1>
-        <form action={signOut}>
-          <button
-            type="submit"
-            className="inline-flex min-h-11 cursor-pointer items-center gap-2 border border-line px-5 text-sm transition-colors duration-200 hover:bg-muted"
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/admin/photos"
+            className="inline-flex min-h-11 items-center border border-line px-5 text-sm transition-colors duration-200 hover:bg-muted"
           >
-            <LogOut className="size-4" aria-hidden="true" />
-            Sign out
-          </button>
-        </form>
+            Homepage photos
+          </Link>
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="inline-flex min-h-11 cursor-pointer items-center gap-2 border border-line px-5 text-sm transition-colors duration-200 hover:bg-muted"
+            >
+              <LogOut className="size-4" aria-hidden="true" />
+              Sign out
+            </button>
+          </form>
+        </div>
       </div>
 
       {/* The three numbers that matter at a glance. */}

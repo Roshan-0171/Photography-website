@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 
 import WorkFilter, { type FilterOption } from "@/components/WorkFilter";
-import WorkHashRedirect from "@/components/WorkHashRedirect";
-import WorkGallery, { isCategory } from "./WorkGallery";
+import WorkGallery, { isCategory } from "../work/WorkGallery";
 import { byWorkGroup, photos, workGroups, workGroupFor, type WorkGroupId } from "@/data/photos";
 
 export const metadata: Metadata = {
@@ -11,18 +10,11 @@ export const metadata: Metadata = {
     "Portrait, editorial, wedding and personal photography and videography, available nationwide.",
 };
 
-export default async function WorkPage({ searchParams }: PageProps<"/work">) {
+export default async function GalleriesPage({ searchParams }: PageProps<"/galleries">) {
   const params = await searchParams;
   const raw = Array.isArray(params.type) ? params.type[0] : params.type;
-
-  // An unrecognised value — a typo, an old value from a deleted category —
-  // falls back to "all" rather than rendering nothing.
   const selected: "all" | WorkGroupId = isCategory(raw) ? workGroupFor(raw)! : "all";
-
-  // Categories with no photos in them drop out of both the filter and the
-  // page entirely, rather than the select offering a choice that renders empty.
   const nonEmpty = workGroups.filter((group) => byWorkGroup(group.id).length > 0);
-
   const options: FilterOption[] = [
     { value: "all", label: "All", count: photos.length },
     ...nonEmpty.map((group) => ({
@@ -34,10 +26,6 @@ export default async function WorkPage({ searchParams }: PageProps<"/work">) {
 
   return (
     <>
-      {/* Fragment-only safety net for old /work#portrait links — see the
-          component for why this can't be done server-side. */}
-      <WorkHashRedirect />
-
       <div className="wrap pt-12 sm:pt-16">
         <WorkFilter options={options} selected={selected} />
       </div>

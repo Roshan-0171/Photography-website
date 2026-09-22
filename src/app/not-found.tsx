@@ -26,7 +26,7 @@ export default function NotFound() {
           {categories.map((c) => (
             <li key={c.id}>
               <Link
-                href={`/work#${c.id}`}
+                href={`/galleries#${c.id}`}
                 className="inline-flex min-h-11 items-center text-sm uppercase tracking-[0.12em] underline-offset-4 hover:underline"
               >
                 {c.label}

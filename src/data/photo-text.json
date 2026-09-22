@@ -21,7 +21,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": 3
+    "home": 7
   },
   "778a2144": {
     "alt": "A bride and groom in red and white wedding attire smile at each other under a fluttering red canopy.",
@@ -29,7 +29,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": 4
+    "home": null
   },
   "778a2234": {
     "alt": "A smiling bride in a red veil and gold jewelry looks up at the groom beside her.",
@@ -37,7 +37,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": 5
+    "home": 3
   },
   "778a2395": {
     "alt": "Bridesmaids in cream and red saris surround a laughing bride in a red and gold outfit under a tree.",
@@ -45,7 +45,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": 6
+    "home": null
   },
   "778a7332": {
     "alt": "Wedding guests in traditional dress gather around a black sports car with its doors open outside a barn-style venue.",
@@ -157,7 +157,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 4
   },
   "dk5a5450": {
     "alt": "A bride in a red and gold saree and a groom in white and maroon walk hand in hand across a lawn.",
@@ -173,7 +173,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 5
   },
   "dk5a5482": {
     "alt": "A bride in red and a groom in white and maroon stand apart outside a glass-walled venue at dusk.",
@@ -277,7 +277,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 21
   },
   "roh01993": {
     "alt": "",
@@ -285,7 +285,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 9
   },
   "roh02006": {
     "alt": "",
@@ -293,7 +293,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 19
   },
   "roh05224": {
     "alt": "",
@@ -341,7 +341,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 10
   },
   "ni70940": {
     "alt": "A bride in red with a sheer veil embraces a groom in a dark suit from behind, both smiling.",
@@ -421,7 +421,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 6
   },
   "ro405703": {
     "alt": "",
@@ -429,7 +429,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 11
   },
   "ro405915": {
     "alt": "",
@@ -461,7 +461,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 20
   },
   "roh04383": {
     "alt": "",
@@ -495,21 +495,13 @@
     "order": null,
     "home": null
   },
-  "roh08699": {
-    "alt": "",
-    "caption": "",
-    "year": null,
-    "featured": false,
-    "order": null,
-    "home": null
-  },
   "ro400079": {
     "alt": "",
     "caption": "",
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 13
   },
   "ro400102": {
     "alt": "",
@@ -557,7 +549,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 16
   },
   "ro403461": {
     "alt": "",
@@ -573,7 +565,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 17
   },
   "ro404285": {
     "alt": "",
@@ -741,7 +733,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 24
   },
   "ro400118": {
     "alt": "",
@@ -813,7 +805,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 18
   },
   "ro402720": {
     "alt": "",
@@ -925,7 +917,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 14
   },
   "ro403264-edit": {
     "alt": "",
@@ -965,7 +957,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 12
   },
   "ro408625": {
     "alt": "",
@@ -997,7 +989,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 23
   },
   "roh03953": {
     "alt": "",
@@ -1005,7 +997,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 22
   },
   "roh04314": {
     "alt": "",
@@ -1021,7 +1013,7 @@
     "year": null,
     "featured": false,
     "order": null,
-    "home": null
+    "home": 15
   },
   "roh04496": {
     "alt": "",

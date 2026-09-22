@@ -11,6 +11,7 @@ import Tilt from "./Tilt";
 type Props = {
   photos: Photo[];
   label: string;
+  layout?: "masonry" | "grid";
   /**
    * The full sequence the lightbox should step through, when it is bigger
    * than what this Gallery instance renders as tiles. Defaults to `photos`.
@@ -25,16 +26,13 @@ type Props = {
 type Entry = Photo & { index: number };
 
 /**
- * Tiles are 4:5 and the same size, so every row lines up — one column of
- * their own on a phone, four on a desktop, decided by the gallery's width.
- * The image is centre-cropped (weighted a little toward the top, where a face
- * usually is) to fill the tile; the whole, uncropped frame is what the
- * lightbox shows. So the grid is a symmetric contact sheet, and the picture
- * itself is never cut — you just click through to see all of it.
+ * Each frame keeps its own intrinsic ratio in the contact sheet. Equal grid
+ * columns, shared gaps, and a mat around every print keep mixed orientations
+ * tidy without cropping the photographs.
  */
 const SIZES = "(min-width: 64rem) 25vw, (min-width: 48rem) 33vw, 50vw";
 
-export default function Gallery({ photos, label, navigationPhotos }: Props) {
+export default function Gallery({ photos, label, navigationPhotos, layout = "masonry" }: Props) {
   const [openAt, setOpenAt] = useState<number | null>(null);
   const navList = navigationPhotos ?? photos;
 
@@ -74,21 +72,45 @@ export default function Gallery({ photos, label, navigationPhotos }: Props) {
       <Tilt className="@container">
         <ul
           aria-label={label}
-          className="grid grid-cols-2 gap-(--gap-tile) @min-[48rem]:grid-cols-3 @min-[64rem]:grid-cols-4"
+          className={
+            layout === "grid"
+              ? "grid grid-cols-2 gap-(--gap-tile) @min-[48rem]:grid-cols-3 @min-[64rem]:grid-cols-4"
+              : "columns-2 @min-[48rem]:columns-3 @min-[64rem]:columns-4"
+          }
+          style={layout === "masonry" ? { columnGap: "var(--gap-tile)" } : undefined}
         >
           {entries.map((entry) => (
-            <li key={entry.id} className="reveal">
+            <li
+              key={entry.id}
+              className={
+                layout === "grid"
+                  ? "reveal min-w-0"
+                  : "reveal mb-(--gap-tile) w-full break-inside-avoid"
+              }
+            >
               <button
                 type="button"
                 data-tilt
                 onClick={() => setOpenAt(entry.index)}
                 className="group block w-full cursor-pointer text-left"
               >
-                {/* Mat board around the print, then the fixed-ratio window the
-                    photograph fills. The mat is padding, never a crop. */}
+                {/* Reserve the photograph's real shape before it loads, so a
+                    landscape frame never flashes or renders as a portrait. */}
                 <span className="print-frame block p-1 sm:p-2">
-                  <span className="relative block aspect-[4/5] overflow-clip bg-muted">
-                    <Picture photo={entry} sizes={SIZES} fill className="object-[50%_35%]" />
+                  <span
+                    className={
+                      layout === "grid"
+                        ? "relative block aspect-[4/5] overflow-clip bg-muted"
+                        : "relative block overflow-clip bg-muted"
+                    }
+                    style={layout === "masonry" ? { aspectRatio: entry.aspectRatio } : undefined}
+                  >
+                    <Picture
+                      photo={entry}
+                      sizes={SIZES}
+                      fill={layout === "grid"}
+                      className={layout === "grid" ? "object-contain" : undefined}
+                    />
                   </span>
                 </span>
                 <span className="sr-only">View larger</span>

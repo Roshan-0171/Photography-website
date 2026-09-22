@@ -7,12 +7,12 @@ import { useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 
 import { nav, site } from "@/data/site";
-import { byCategory, categories } from "@/data/photos";
+import { byWorkGroup, workGroups } from "@/data/photos";
 import ThemeToggle from "./ThemeToggle";
 
 // Categories with no photos in them drop out here too, matching /work's own
 // filter — the hover menu should never offer a link that lands on an empty page.
-const workCategories = categories.filter((c) => byCategory(c.id).length > 0);
+const workCategories = workGroups.filter((group) => byWorkGroup(group.id).length > 0);
 
 export default function SiteHeader() {
   const pathname = usePathname();
@@ -59,7 +59,7 @@ export default function SiteHeader() {
 
         <nav aria-label="Primary" className="hidden items-center gap-8 md:flex">
           {nav.map((item) =>
-            item.href === "/work" ? (
+            item.href === "/galleries" ? (
               <div key={item.href} className="group relative">
                 <Link
                   href={item.href}
@@ -77,13 +77,13 @@ export default function SiteHeader() {
                     never leaves the hoverable area on its way down to the menu. */}
                 <div className="invisible absolute left-1/2 top-full z-50 w-48 -translate-x-1/2 pt-3 opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                   <ul className="print-frame divide-y divide-line bg-bg">
-                    {workCategories.map((c) => (
-                      <li key={c.id}>
+                    {workCategories.map((group) => (
+                      <li key={group.id}>
                         <Link
-                          href={`/work?type=${c.id}`}
+                          href={`/galleries/${group.id}`}
                           className="block px-4 py-2.5 text-sm text-muted-fg transition-colors duration-150 hover:bg-muted hover:text-fg"
                         >
-                          {c.label}
+                          {group.label}
                         </Link>
                       </li>
                     ))}
@@ -143,22 +143,22 @@ export default function SiteHeader() {
                   onClick={() => setOpen(false)}
                   aria-current={isActive(item.href) ? "page" : undefined}
                   className={`block border-b border-line py-4 text-base ${
-                    item.href === "/work" ? "pb-0" : ""
+                    item.href === "/galleries" ? "pb-0" : ""
                   } ${isActive(item.href) ? "text-fg" : "text-muted-fg"}`}
                 >
                   {item.label}
                 </Link>
 
-                {item.href === "/work" && (
+                {item.href === "/galleries" && (
                   <ul className="flex flex-wrap gap-x-4 gap-y-2 border-b border-line py-4">
-                    {workCategories.map((c) => (
-                      <li key={c.id}>
+                    {workCategories.map((group) => (
+                      <li key={group.id}>
                         <Link
-                          href={`/work?type=${c.id}`}
+                          href={`/galleries/${group.id}`}
                           onClick={() => setOpen(false)}
                           className="text-sm text-muted-fg underline-offset-4 hover:text-fg hover:underline"
                         >
-                          {c.label}
+                          {group.label}
                         </Link>
                       </li>
                     ))}

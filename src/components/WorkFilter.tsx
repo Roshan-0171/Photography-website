@@ -15,7 +15,7 @@ type Props = {
  * glance instead of hidden behind a dropdown, the current one is marked, and
  * switching is one click. Because they are plain anchors the filter works with
  * no JavaScript, is keyboard- and screen-reader-native, and gives crawlers a
- * href to every ?type= view — which the old select needed a hidden nav for.
+ * href to every clean category view.
  *
  * The row wraps rather than scrolls, so nothing is ever off-screen on a phone.
  */
@@ -28,7 +28,7 @@ export default function WorkFilter({ options, selected }: Props) {
           return (
             <li key={o.value}>
               <Link
-                href={o.value === "all" ? "/work" : `/work?type=${o.value}`}
+                href={o.value === "all" ? "/galleries" : `/galleries/${o.value}`}
                 aria-current={active ? "page" : undefined}
                 className={`inline-flex min-h-11 items-baseline gap-2 border-b-2 pb-2 pt-3 text-sm transition-colors duration-200 ${
                   active

@@ -1,6 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
+import { createHash } from "node:crypto";
 
 import {
   BUDGETS,
@@ -23,6 +24,25 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 // Loose on purpose: digits, spaces and the punctuation real numbers use
 // (+, -, (), extensions), not a strict international format.
 const PHONE = /^[0-9+\-()\s]{7,20}$/;
+const SPAM_PATTERNS = /(?:buy|cheap|casino|crypto|guest\s+post|backlink|seo\s+service|viagra|loan)/i;
+const URL_PATTERN = /https?:\/\/|www\./gi;
+const MIN_FORM_TIME_MS = 1_500;
+
+async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) return true;
+  if (!token) return false;
+
+  const body = new URLSearchParams({ secret, response: token, remoteip: ip });
+  const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    body,
+    cache: "no-store",
+  });
+  if (!response.ok) return false;
+  const result = (await response.json()) as { success?: boolean };
+  return result.success === true;
+}
 
 /**
  * Every field is re-checked here regardless of what the browser did. Client
@@ -61,6 +81,11 @@ function validate(values: InquiryValues): Record<string, string> {
   return errors;
 }
 
+function looksLikeSpam(values: InquiryValues): boolean {
+  const text = `${values.name} ${values.message}`;
+  return (text.match(URL_PATTERN)?.length ?? 0) > 2 || SPAM_PATTERNS.test(text);
+}
+
 export async function submitInquiry(
   _prev: InquiryState,
   formData: FormData,
@@ -84,11 +109,24 @@ export async function submitInquiry(
   };
 
   const ip = clientKey(await headers());
+  const startedAt = Number(formData.get("formStartedAt"));
 
   // Layer 1 — honeypot. Bots fill every field they find; humans never see this
   // one. Checked first so spam never consumes a real visitor's rate-limit quota.
   if (get("company")) {
     console.info("[inquiry] honeypot tripped", { ip });
+    return { status: "failed", errors: {}, values: {}, message: REJECTED_MESSAGE };
+  }
+
+  if (!(await verifyTurnstile(get("cf-turnstile-response"), ip))) {
+    console.info("[inquiry] Turnstile verification failed", { ip });
+    return { status: "failed", errors: {}, values: {}, message: REJECTED_MESSAGE };
+  }
+
+  // Real visitors need time to read and complete the form. Missing timestamps
+  // are allowed so direct/no-JavaScript submissions keep working.
+  if (Number.isFinite(startedAt) && Date.now() - startedAt < MIN_FORM_TIME_MS) {
+    console.info("[inquiry] submitted too quickly", { ip });
     return { status: "failed", errors: {}, values: {}, message: REJECTED_MESSAGE };
   }
 
@@ -103,6 +141,24 @@ export async function submitInquiry(
   const errors = validate(values);
   if (Object.keys(errors).length > 0) {
     return { status: "error", errors, values };
+  }
+
+  if (looksLikeSpam(values)) {
+    console.info("[inquiry] spam pattern rejected", { ip });
+    return { status: "failed", errors: {}, values: {}, message: REJECTED_MESSAGE };
+  }
+
+  // A distributed bot can rotate IP addresses, but it is less likely to have
+  // an endless supply of valid recipient addresses. This is separate from the
+  // IP limit and deliberately starts only after the fields validate.
+  const emailKey = createHash("sha256").update(values.email.toLowerCase()).digest("hex");
+  const emailLimit = await rateLimit(`email:${emailKey}`, {
+    max: 3,
+    windowMs: 24 * 60 * 60 * 1000,
+  });
+  if (!emailLimit.allowed) {
+    console.warn("[inquiry] email rate limited", { ip });
+    return { status: "failed", errors: {}, values: {}, message: REJECTED_MESSAGE };
   }
 
   /**
